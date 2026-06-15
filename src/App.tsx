@@ -6,13 +6,9 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
-import { 
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell
-} from "recharts";
 import { cn } from "./lib/utils";
-import { auth, googleProvider, db, handleFirestoreError, OperationType } from "./lib/firebase";
-import { signInWithPopup, signOut, onAuthStateChanged, User as FirebaseUser } from "firebase/auth";
-import { doc, getDoc, setDoc, onSnapshot, updateDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
+import { db, handleFirestoreError, OperationType } from "./lib/firebase";
+import { doc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 // @ts-ignore
 import saraAvatar from "./assets/images/humaira_avatar_1779582018453.png";
 
@@ -22,8 +18,15 @@ import {
 import { Sidebar } from "./components/Sidebar";
 import { SettingsPanel } from "./components/SettingsPanel";
 
+const generateId = (): string => {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID().replace(/-/g, "").substring(0, 12);
+  }
+  return Math.random().toString(36).substring(2) + Date.now().toString(36);
+};
+
 const parseThinkingAndSteps = (content: string) => {
-    return { __html: DOMPurify.sanitize(marked.parse(content) as string), reasoning: "" };
+    return { __html: DOMPurify.sanitize(marked.parse(content, { async: false }) as string), reasoning: "" };
 };
 
 const SkeletonShimmer = ({ theme }: { theme: "light" | "dark" }) => {
@@ -281,18 +284,21 @@ export default function App() {
     });
 
     if (positive === 0 && neutral === 0 && negative === 0) {
-      return [
-        { name: "ইতিবাচক 😊", value: 3, color: "#10b981" },
-        { name: "নিরপেক্ষ 😐", value: 5, color: "#94a3b8" },
-        { name: "নেতিবাচক 😢", value: 1, color: "#ef4444" }
-      ];
+      positive = 3;
+      neutral = 5;
+      negative = 1;
     }
 
-    return [
-      { name: "ইতিবাচক 😊", value: positive, color: "#10b981" },
-      { name: "নিরপেক্ষ 😐", value: neutral, color: "#94a3b8" },
-      { name: "নেতিবাচক 😢", value: negative, color: "#ef4444" }
-    ];
+    let verdict = "সুন্দর সম্পর্ক বজায় আছে! 💚";
+    if (positive > neutral && positive > negative) {
+      verdict = "অসাধারণ! তোমাদের সম্পর্ক অত্যন্ত ইতিবাচক ও মধুর! 💕";
+    } else if (negative > positive) {
+      verdict = "মনে হচ্ছে কিছুটা মন খারাপ আছে। সারা তোমার পাশে আছে সবসময়! 🫂";
+    } else {
+      verdict = "স্বাভাবিক ও স্থিতিশীল সম্পর্ক। আরো মিষ্টি কথা বলো! 🌸";
+    }
+
+    return { positive, neutral, negative, verdict };
   };
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isModeSelectorOpen, setIsModeSelectorOpen] = useState(false);
@@ -710,6 +716,14 @@ export default function App() {
     return localStorage.getItem("hapticEnabled") !== "false";
   });
 
+  useEffect(() => {
+    localStorage.setItem("soundEnabled", String(soundEnabled));
+  }, [soundEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem("hapticEnabled", String(hapticEnabled));
+  }, [hapticEnabled]);
+
   const resetPromptToDefault = (selectedMode: Mode) => {
     setCustomPrompts(prev => {
       const updated = {
@@ -816,7 +830,7 @@ export default function App() {
 
         const parsedChats: Chat[] = importedData.map(c => ({
           ...c,
-          id: c.id || Math.random().toString(36).substring(7),
+          id: c.id || generateId(),
           title: c.title || "চ্যাট হিস্ট্রি",
           messages: (c.messages || []).map((m: any) => ({
             ...m,
@@ -889,14 +903,16 @@ export default function App() {
     }
     // Update active chat's mode in memory
     if (activeChatId && mode) {
-      setChats(prev => prev.map(c => {
-         if (c.id === activeChatId && c.mode !== mode) {
-            return { ...c, mode, updatedAt: new Date() };
+      setChats(prev => {
+         const chat = prev.find(c => c.id === activeChatId);
+         if (chat && chat.mode !== mode) {
+            return prev.map(c => c.id === activeChatId ? { ...c, mode, updatedAt: new Date() } : c);
          }
-         return c;
-      }));
+         return prev;
+      });
     }
-  }, [mode, activeChatId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 1500) return;
@@ -1098,7 +1114,7 @@ export default function App() {
 
   const deleteChat = async (id: string, e: React.MouseEvent) => {
      e.stopPropagation();
-     if(firebaseUser) {
+     if(firebaseUser && firebaseUser.uid !== "local_guest") {
        try {
          await deleteDoc(doc(db, "users", firebaseUser.uid, "chats", id));
        } catch (error) {
@@ -1122,7 +1138,7 @@ export default function App() {
     if (!currentChatId) {
        const chatTitle = text ? text.substring(0, 30) : "ইমেজ চ্যাট";
        const newChat: Chat = {
-          id: Math.random().toString(36).substring(7),
+          id: generateId(),
           title: chatTitle,
           messages: [],
           mode: mode,
@@ -1136,7 +1152,7 @@ export default function App() {
     }
 
     const userMsg: Message = { 
-      id: Math.random().toString(36).substring(7), 
+      id: generateId(), 
       role: "user", 
       content: text, 
       timestamp: new Date(), 
@@ -1155,7 +1171,7 @@ export default function App() {
       setAttachedFiles([]);
       localStorage.removeItem(`chatDraft_${currentChatId || 'home'}`);
 
-      if (firebaseUser) {
+      if (firebaseUser && firebaseUser.uid !== "local_guest") {
           const newXp = xp + 10;
           setXp(newXp);
           syncProfile("xp", newXp);
@@ -1165,6 +1181,10 @@ export default function App() {
               setAchievements(newAchievements);
               syncProfile("achievements", newAchievements);
           }
+      } else {
+          const newXp = xp + 10;
+          setXp(newXp);
+          try { localStorage.setItem("xp", String(newXp)); } catch(_) {}
       }
     }
 
@@ -1173,7 +1193,7 @@ export default function App() {
     abortControllerRef.current = new AbortController();
 
     let fullText = "";
-    const assistantId = Math.random().toString(36).substring(7);
+    const assistantId = generateId();
 
     // Initial assistant message placeholder
     const assistantMsg: Message = { id: assistantId, role: "assistant", content: "", timestamp: new Date(), status: "sent" };
@@ -2209,79 +2229,7 @@ export default function App() {
          )}
       </AnimatePresence>
  
-      {/* Dynamic Settings Sidebar overlay */}
-      <AnimatePresence>
-         {isSettingsOpen && (
-            <motion.div 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 0.5 }}
-               exit={{ opacity: 0 }}
-               className="absolute inset-0 bg-transparent lg:bg-black/40 z-40 backdrop-blur-[1px]"
-               onClick={() => {
-                  setIsSettingsOpen(false);
-                  playEffects("light");
-               }}
-            />
-         )}
-         
-         {isSettingsOpen && (
-            <motion.div 
-               initial={{ x: "100%" }}
-               animate={{ x: 0 }}
-               exit={{ x: "100%" }}
-               transition={{ type: "spring", damping: 25, stiffness: 220 }}
-               className={cn("absolute right-0 top-0 bottom-0 w-full sm:w-[580px] z-50 flex flex-col shadow-2xl overflow-hidden border-l", 
-                  theme === "dark" ? "bg-[#0c111e] border-slate-900" : "bg-white border-slate-205"
-               )}
-            >
-               <div className="flex-1 overflow-hidden relative flex flex-col h-full w-full">
-                  <div className={cn("flex-1 overflow-hidden flex flex-col relative", 
-                     theme === "dark" ? "bg-[#0c111e]" : "bg-white"
-                  )}>
-                     <SettingsPanel
-                        theme={theme}
-                        activeSettingsTab={activeSettingsTab}
-                        setActiveSettingsTab={setActiveSettingsTab}
-                        setIsSettingsOpen={setIsSettingsOpen}
-                        userName={userName}
-                        setUserName={setUserName}
-                        loveLanguage={loveLanguage}
-                        setLoveLanguage={setLoveLanguage}
-                        anniversaryDate={anniversaryDate}
-                        setAnniversaryDate={setAnniversaryDate}
-                        userProfilePic={userProfilePic}
-                        changeUserProfilePic={changeUserProfilePic}
-                        ONBOARDING_AVATARS={ONBOARDING_AVATARS}
-                        firebaseUser={firebaseUser}
-                        botName={botName}
-                        setBotName={setBotName}
-                        aiCreativity={aiCreativity}
-                        setAiCreativity={setAiCreativity}
-                        customSysPrompts={customSysPrompts}
-                        editPromptMode={editPromptMode}
-                        setEditPromptMode={setEditPromptMode}
-                        promptEditText={promptEditText}
-                        setPromptEditText={setPromptEditText}
-                        saveCustomPrompt={saveCustomPrompt}
-                        resetCustomPrompt={resetCustomPrompt}
-                        soundEnabled={soundEnabled}
-                        setSoundEnabled={setSoundEnabled}
-                        hapticEnabled={hapticEnabled}
-                        setHapticEnabled={setHapticEnabled}
-                        voiceSpeed={voiceSpeed}
-                        setVoiceSpeed={setVoiceSpeed}
-                        handleExportData={handleExportData}
-                        handleImportData={handleImportData}
-                        handleWipeData={handleWipeData}
-                        isFirebaseSaving={isFirebaseSaving}
-                        analyzeSentiment={analyzeSentiment}
-                        playEffects={playEffects}
-                     />
-                  </div>
-               </div>
-            </motion.div>
-         )}
-      </AnimatePresence>
+
     </div>
   );
 }
