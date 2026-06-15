@@ -50,9 +50,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const leagueName = xp >= 2500 ? "Diamond League 💎" : xp >= 1800 ? "Emerald League 💚" : xp >= 1200 ? "Gold League 🟡" : "Bronze League 🥉";
 
   return (
-    <div className="flex flex-col h-full w-full select-none bg-white dark:bg-[#131f24] border-r-2 border-slate-200 dark:border-[#37464f]">
+    <div className="flex flex-col h-full w-full select-none bg-[#fffbfb] dark:bg-[#0e0f17] border-r-2 border-slate-150 dark:border-slate-850">
       {/* Brand & Character Emblem */}
-      <div className="p-5 flex items-center justify-between border-b-2 border-slate-200 dark:border-[#37464f] shrink-0 bg-white dark:bg-[#1a2d34]">
+      <div className="p-5 flex items-center justify-between border-b-2 border-pink-100/40 dark:border-[#1e2030] shrink-0 bg-gradient-to-r from-pink-50/40 to-rose-50/45 dark:from-[#141624] dark:to-[#121422]">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-[#58cc02] border-2 border-b-[5px] border-[#46a302] p-1 flex items-center justify-center relative shadow-sm group hover:scale-[1.03] transition-transform">
             <img src={saraAvatar || "https://api.dicebear.com/7.x/adventurer/svg?seed=Sara"} alt="Sara" className="w-full h-full object-cover rounded-xl" />
@@ -81,15 +81,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Stats Quick Status (Duolingo Header Items) */}
-      <div className="px-5 py-3.5 bg-slate-50 dark:bg-[#1a2d34]/60 grid grid-cols-2 gap-2 text-xs font-black border-b-2 border-slate-200 dark:border-[#37464f]">
-        <div className="flex items-center gap-2 p-1.5 rounded-xl border-2 border-b-4 border-slate-200 dark:border-[#37464f] bg-white dark:bg-[#131f24]/50">
+      <div className="px-5 py-3.5 bg-pink-50/10 dark:bg-[#111322]/60 grid grid-cols-2 gap-2 text-xs font-black border-b-2 border-pink-100/30 dark:border-[#1e2030]">
+        <div className="flex items-center gap-2 p-1.5 rounded-xl border-2 border-b-4 border-pink-100/40 dark:border-[#1e2030] bg-[#fffcfc] dark:bg-[#0e0f17]/50">
           <Flame className="w-4 h-4 text-[#ff9600] fill-current animate-pulse" />
           <div className="flex flex-col">
             <span className="text-[9px] text-slate-400 dark:text-[#afc2cb] font-extrabold uppercase leading-none">Streak</span>
             <span className="text-[#ff9600] text-xs font-black mt-0.5">{streak} Days</span>
           </div>
         </div>
-        <div className="flex items-center gap-2 p-1.5 rounded-xl border-2 border-b-4 border-slate-200 dark:border-[#37464f] bg-white dark:bg-[#131f24]/50">
+        <div className="flex items-center gap-2 p-1.5 rounded-xl border-2 border-b-4 border-pink-100/40 dark:border-[#1e2030] bg-[#fffcfc] dark:bg-[#0e0f17]/50">
           <Star className="w-4 h-4 text-[#ffc800] fill-current animate-bounce" />
           <div className="flex flex-col">
             <span className="text-[9px] text-slate-400 dark:text-[#afc2cb] font-extrabold uppercase leading-none">Total XP</span>
@@ -265,7 +265,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Profile Block (Duolingo Tactile Box Layout) */}
-      <div className="p-4 border-t-2 border-slate-200 dark:border-[#37464f] shrink-0 bg-slate-50/50 dark:bg-[#1a2d34] mt-auto">
+      <div className="p-4 border-t-2 border-pink-100/30 dark:border-[#1e2030] shrink-0 bg-pink-50/10 dark:bg-[#101220] mt-auto">
         <div className="flex flex-col gap-3">
           <button 
             onClick={() => { 
@@ -274,7 +274,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               setIsSidebarOpen(false); 
               playEffects("medium"); 
             }}
-            className="w-full rounded-[20px] p-2.5 flex items-center gap-3 border-2 border-b-[5px] bg-white dark:bg-[#131f24] border-slate-200 dark:border-[#37464f] text-slate-700 dark:text-white transition-all active:border-b-2 active:translate-y-[2px] cursor-pointer group text-left"
+            className="w-full rounded-[20px] p-2.5 flex items-center gap-3 border-2 border-b-[5px] bg-[#fffcfc] dark:bg-[#0e0f17] border-pink-100/40 dark:border-[#1e2030] text-slate-700 dark:text-white transition-all active:border-b-2 active:translate-y-[2px] cursor-pointer group text-left"
             title="প্রোফাইল সংশোধন করুন ⚙️"
           >
             <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#1cb0f6] p-0.5 shadow-sm shrink-0 relative">
@@ -301,14 +301,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="grid grid-cols-2 gap-2">
             <button 
               onClick={() => { setIsSettingsOpen(true); setIsSidebarOpen(false); playEffects("medium"); }} 
-              className="py-2.5 rounded-2xl border-2 border-b-[4px] bg-white border-slate-200 dark:bg-[#131f24] dark:border-[#37464f] hover:bg-slate-50 dark:hover:bg-[#202f36] text-[#ff9600] flex items-center justify-center gap-1.5 font-extrabold text-[11px] cursor-pointer"
+              className="py-2.5 rounded-2xl border-2 border-b-[4px] bg-[#fffcfc] border-pink-100/40 dark:bg-[#0e0f17] dark:border-[#1e2030] hover:bg-pink-50/10 dark:hover:bg-[#1a1b2d] text-[#ff9600] flex items-center justify-center gap-1.5 font-extrabold text-[11px] cursor-pointer"
             >
               <Settings className="w-3.5 h-3.5 stroke-[3]" />
               সেটিংস
             </button>
             <button 
               onClick={() => { setTheme(theme === "light" ? "dark" : "light"); playEffects("medium"); }} 
-              className="py-2.5 rounded-2xl border-2 border-b-[4px] bg-white border-slate-200 dark:bg-[#131f24] dark:border-[#37464f] hover:bg-slate-50 dark:hover:bg-[#202f36] text-[#1cb0f6] flex items-center justify-center gap-1.5 font-extrabold text-[11px] cursor-pointer"
+              className="py-2.5 rounded-2xl border-2 border-b-[4px] bg-[#fffcfc] border-pink-100/40 dark:bg-[#0e0f17] dark:border-[#1e2030] hover:bg-pink-50/10 dark:hover:bg-[#1a1b2d] text-[#1cb0f6] flex items-center justify-center gap-1.5 font-extrabold text-[11px] cursor-pointer"
             >
               {theme === "light" ? <Moon className="w-3.5 h-3.5 text-indigo-500 fill-indigo-100" /> : <Sun className="w-3.5 h-3.5 text-amber-500 fill-amber-100" />}
               {theme === "light" ? "ডার্ক মোড" : "লাইট মোড"}

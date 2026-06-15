@@ -20,7 +20,6 @@ interface SettingsPanelProps {
   userProfilePic: string | null;
   changeUserProfilePic: (s: string) => void;
   ONBOARDING_AVATARS: string[];
-  firebaseUser: any;
   
   // Chatbot settings tab bindings
   botName: string;
@@ -47,7 +46,6 @@ interface SettingsPanelProps {
   handleExportData: () => void;
   handleImportData: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleWipeData: () => void;
-  isFirebaseSaving: boolean;
   
   // Analytics calculations
   analyzeSentiment: () => { positive: number; neutral: number; negative: number; verdict: string };
@@ -68,7 +66,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   userProfilePic,
   changeUserProfilePic,
   ONBOARDING_AVATARS,
-  firebaseUser,
   botName,
   setBotName,
   aiCreativity,
@@ -89,7 +86,6 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   handleExportData,
   handleImportData,
   handleWipeData,
-  isFirebaseSaving,
   analyzeSentiment,
   playEffects
 }) => {
@@ -110,10 +106,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
   ];
 
   return (
-    <div className={cn("flex flex-col h-full w-full select-none animate-fade-in bg-slate-50 dark:bg-[#131f24] text-slate-800 dark:text-[#afc2cb]")}>
+    <div className={cn("flex flex-col h-full w-full select-none animate-fade-in bg-[#fff7f8] dark:bg-[#0b0c16] text-slate-800 dark:text-[#afc2cb]")}>
       
       {/* Top Header Bar */}
-      <div className="px-6 py-4 border-b-2 border-slate-200 dark:border-[#37464f] flex items-center justify-between bg-white dark:bg-[#1a2d34] shrink-0">
+      <div className="px-6 py-4 border-b-2 border-pink-100/40 dark:border-[#1e2030] flex items-center justify-between bg-gradient-to-r from-pink-50/40 to-rose-50/45 dark:from-[#141624] dark:to-[#121422] shrink-0">
         <div className="flex items-center gap-2.5">
           <span className="text-xl">🦉</span>
           <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">
@@ -122,7 +118,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         </div>
         <button 
           onClick={() => { setIsSettingsOpen(false); playEffects("medium"); }}
-          className="p-2 rounded-xl transition-all active:scale-90 border-2 border-slate-200 dark:border-[#37464f] bg-white dark:bg-[#131f24] text-slate-500 dark:text-[#afc2cb] hover:bg-slate-100 dark:hover:bg-[#202f36] cursor-pointer"
+          className="p-2 rounded-xl transition-all active:scale-90 border-2 border-pink-100/45 dark:border-[#1e2030] bg-white dark:bg-[#0e0f17] text-slate-500 dark:text-[#afc2cb] hover:bg-pink-50/20 dark:hover:bg-[#202f36] cursor-pointer"
           title="সেটিংস বন্ধ করুন"
         >
           <X className="w-4 h-4 stroke-[3]" />
@@ -133,7 +129,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         
         {/* Left Side: Duolingo vertical button block */}
-        <div className="w-full md:w-[240px] shrink-0 border-b-2 md:border-b-0 md:border-r-2 border-slate-200 dark:border-[#37464f] p-4 flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible md:overflow-y-auto gap-2 bg-white dark:bg-[#1a2d34]/40 scrollbar-none">
+        <div className="w-full md:w-[240px] shrink-0 border-b-2 md:border-b-0 md:border-r-2 border-pink-100/40 dark:border-[#1e2030] p-4 flex flex-row md:flex-col overflow-x-auto md:overflow-x-visible md:overflow-y-auto gap-2 bg-[#fffcfc] dark:bg-[#101220]/40 scrollbar-none">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeSettingsTab === tab.id;
@@ -154,7 +150,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                   "px-4 py-3 rounded-[18px] text-[13px] font-black flex items-center justify-center md:justify-start gap-2.5 transition-all duration-100 border-2 border-b-[5px] cursor-pointer whitespace-nowrap active:border-b-2 active:translate-y-[2px]",
                   isActive 
                     ? activeStyle 
-                    : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-700 dark:text-[#afc2cb] hover:bg-slate-50 dark:hover:bg-[#202f36]"
+                    : "bg-[#fffcfc] dark:bg-[#0e0f17] border-pink-100/40 dark:border-[#1e2030] text-slate-700 dark:text-[#afc2cb] hover:bg-pink-50/10 dark:hover:bg-[#1a1b2d]"
                 )}
               >
                 <Icon className="w-4 h-4 stroke-[3]" />
@@ -165,12 +161,12 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
         </div>
 
         {/* Right Side: Scrollable detail page */}
-        <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 scrollbar-none bg-[#f7f7f7] dark:bg-[#131f24]">
+        <div className="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 scrollbar-none bg-[#fff7f8] dark:bg-[#0b0c16]">
           
           {/* PROFILE TABS */}
           {activeSettingsTab === "profile" && (
             <div className="space-y-6 max-w-xl animate-fade-in">
-              <div className="bg-white dark:bg-[#1a2d34] border-2 border-b-8 border-slate-200 dark:border-[#37464f] rounded-[24px] p-5 sm:p-6 space-y-5">
+              <div className="bg-[#fffcfc] dark:bg-[#0e0f17] border-2 border-b-8 border-pink-100/40 dark:border-[#1e2030] rounded-[24px] p-5 sm:p-6 space-y-5">
                 <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                   <User className="w-5 h-5 text-[#1cb0f6] stroke-[3]" /> আমার প্রোফাইল অবয়ব
                 </h3>
@@ -179,21 +175,11 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                 <div className="space-y-2">
                   <span className="text-[11px] font-extrabold text-slate-400 dark:text-[#afc2cb]/70 uppercase tracking-wider pl-1">ছবি নির্বাচন করুন</span>
                   <div className="flex flex-wrap gap-3 p-1">
-                    {firebaseUser?.photoURL && (
-                      <button
-                        onClick={() => { changeUserProfilePic(firebaseUser.photoURL); playEffects("medium"); }}
-                        className={cn("relative w-14 h-14 rounded-full border-4 transition-transform active:scale-95 p-0.5 overflow-hidden shadow-sm bg-slate-50",
-                          userProfilePic === firebaseUser.photoURL ? "border-[#1cb0f6] scale-105" : "border-slate-100 dark:border-[#37464f] opacity-60 hover:opacity-100"
-                        )}
-                      >
-                        <img src={firebaseUser.photoURL} className="w-full h-full object-cover rounded-full" referrerPolicy="no-referrer" />
-                      </button>
-                    )}
                     {ONBOARDING_AVATARS.map((avat, i) => (
                       <button
                         key={i}
                         onClick={() => { changeUserProfilePic(avat); playEffects("medium"); }}
-                        className={cn("relative w-14 h-14 rounded-full border-4 transition-transform active:scale-95 p-0.5 overflow-hidden shadow-sm bg-slate-50",
+                        className={cn("relative w-14 h-14 rounded-full border-4 transition-transform active:scale-95 p-0.5 overflow-hidden shadow-sm bg-[#fdfafb]",
                           userProfilePic === avat ? "border-[#1cb0f6] scale-105" : "border-slate-100 dark:border-[#37464f] opacity-60 hover:opacity-100"
                         )}
                       >
@@ -211,7 +197,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       type="text"
                       value={userName}
                       onChange={(e) => setUserName(e.target.value)}
-                      className="w-full rounded-2xl px-4 py-3 font-extrabold text-xs border-2 border-slate-200 dark:border-[#37464f] bg-slate-50 dark:bg-[#131f24] text-slate-900 dark:text-white outline-none focus:border-[#1cb0f6] transition-colors"
+                      className="w-full rounded-2xl px-4 py-3 font-extrabold text-xs border-2 border-pink-100/30 dark:border-[#1e2030] bg-[#fdfafb] dark:bg-[#080911] text-slate-900 dark:text-white outline-none focus:border-[#1cb0f6] transition-colors"
                       maxLength={25}
                     />
                   </div>
@@ -221,7 +207,7 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       type="text"
                       value={loveLanguage}
                       onChange={(e) => setLoveLanguage(e.target.value)}
-                      className="w-full rounded-2xl px-4 py-3 font-extrabold text-xs border-2 border-slate-200 dark:border-[#37464f] bg-slate-50 dark:bg-[#131f24] text-slate-900 dark:text-white outline-none focus:border-[#1cb0f6] transition-colors"
+                      className="w-full rounded-2xl px-4 py-3 font-extrabold text-xs border-2 border-pink-100/30 dark:border-[#1e2030] bg-[#fdfafb] dark:bg-[#080911] text-slate-900 dark:text-white outline-none focus:border-[#1cb0f6] transition-colors"
                       placeholder="যেমন: অবহেলা করো না ইত্যাদি"
                       maxLength={20}
                     />
@@ -232,18 +218,10 @@ export const SettingsPanel: React.FC<SettingsPanelProps> = ({
                       type="date"
                       value={anniversaryDate}
                       onChange={(e) => setAnniversaryDate(e.target.value)}
-                      className="w-full rounded-2xl px-4 py-3 font-extrabold text-xs border-2 border-slate-200 dark:border-[#37464f] bg-slate-50 dark:bg-[#131f24] text-slate-900 dark:text-white cursor-pointer outline-none focus:border-[#1cb0f6] transition-colors"
+                      className="w-full rounded-2xl px-4 py-3 font-extrabold text-xs border-2 border-pink-100/30 dark:border-[#1e2030] bg-[#fdfafb] dark:bg-[#080911] text-slate-900 dark:text-white cursor-pointer outline-none focus:border-[#1cb0f6] transition-colors"
                     />
                   </div>
                 </div>
-
-                {/* Cloud Save status indicator (Duolingo style card feet) */}
-                {isFirebaseSaving && (
-                  <div className="p-3 rounded-2xl bg-[#1cb0f6]/10 text-[#1cb0f6] font-black text-[11px] flex items-center gap-2 animate-pulse border border-[#1cb0f6]/20">
-                    <Sparkles className="w-4 h-4 text-[#1cb0f6] animate-spin" />
-                    সমস্ত কাস্টম তথ্য ক্লাউড ডায়েরিতে সংরক্ষিত হচ্ছে...
-                  </div>
-                )}
               </div>
             </div>
           )}

@@ -6,9 +6,10 @@ import {
 import { motion, AnimatePresence } from "motion/react";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
+import { 
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell
+} from "recharts";
 import { cn } from "./lib/utils";
-import { db, handleFirestoreError, OperationType } from "./lib/firebase";
-import { doc, setDoc, updateDoc, deleteDoc } from "firebase/firestore";
 // @ts-ignore
 import saraAvatar from "./assets/images/humaira_avatar_1779582018453.png";
 
@@ -18,15 +19,8 @@ import {
 import { Sidebar } from "./components/Sidebar";
 import { SettingsPanel } from "./components/SettingsPanel";
 
-const generateId = (): string => {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID().replace(/-/g, "").substring(0, 12);
-  }
-  return Math.random().toString(36).substring(2) + Date.now().toString(36);
-};
-
 const parseThinkingAndSteps = (content: string) => {
-    return { __html: DOMPurify.sanitize(marked.parse(content, { async: false }) as string), reasoning: "" };
+    return { __html: DOMPurify.sanitize(marked.parse(content) as string), reasoning: "" };
 };
 
 const SkeletonShimmer = ({ theme }: { theme: "light" | "dark" }) => {
@@ -284,21 +278,18 @@ export default function App() {
     });
 
     if (positive === 0 && neutral === 0 && negative === 0) {
-      positive = 3;
-      neutral = 5;
-      negative = 1;
+      return [
+        { name: "ইতিবাচক 😊", value: 3, color: "#10b981" },
+        { name: "নিরপেক্ষ 😐", value: 5, color: "#94a3b8" },
+        { name: "নেতিবাচক 😢", value: 1, color: "#ef4444" }
+      ];
     }
 
-    let verdict = "সুন্দর সম্পর্ক বজায় আছে! 💚";
-    if (positive > neutral && positive > negative) {
-      verdict = "অসাধারণ! তোমাদের সম্পর্ক অত্যন্ত ইতিবাচক ও মধুর! 💕";
-    } else if (negative > positive) {
-      verdict = "মনে হচ্ছে কিছুটা মন খারাপ আছে। সারা তোমার পাশে আছে সবসময়! 🫂";
-    } else {
-      verdict = "স্বাভাবিক ও স্থিতিশীল সম্পর্ক। আরো মিষ্টি কথা বলো! 🌸";
-    }
-
-    return { positive, neutral, negative, verdict };
+    return [
+      { name: "ইতিবাচক 😊", value: positive, color: "#10b981" },
+      { name: "নিরপেক্ষ 😐", value: neutral, color: "#94a3b8" },
+      { name: "নেতিবাচক 😢", value: negative, color: "#ef4444" }
+    ];
   };
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [isModeSelectorOpen, setIsModeSelectorOpen] = useState(false);
@@ -479,7 +470,7 @@ export default function App() {
     }, 2000);
   };
   
-  const [firebaseUser, setFirebaseUser] = useState<any | null>(() => {
+  const [localUser, setLocalUser] = useState<any | null>(() => {
     return {
       uid: "local_guest",
       displayName: "শ্রাবণী সারা খান",
@@ -487,13 +478,7 @@ export default function App() {
       photoURL: "https://api.dicebear.com/7.x/adventurer/svg?seed=Sophia"
     };
   });
-  const [completedOnboarding, setCompletedOnboarding] = useState(() => {
-    try {
-      return localStorage.getItem("completedOnboarding") === "true";
-    } catch (_) {
-      return false;
-    }
-  });
+  const [completedOnboarding, setCompletedOnboarding] = useState(true);
   const [onboardingStep, setOnboardingStep] = useState<"avatar" | "chatbotName">("avatar");
   const [selectedOnboardingPic, setSelectedOnboardingPic] = useState("https://api.dicebear.com/7.x/adventurer/svg?seed=Sophia");
   const [typedBotName, setTypedBotName] = useState("সারা এআই");
@@ -567,16 +552,12 @@ export default function App() {
     
     if (field === "userName") {
       setUserName(val);
-      syncProfile("name", val);
     } else if (field === "userProfilePic") {
       setUserProfilePic(val);
-      syncProfile("photoURL", val);
     } else if (field === "loveLanguage") {
       setLoveLanguage(val);
-      syncProfile("loveLanguage", val);
     } else if (field === "anniversaryDate") {
       setAnniversaryDate(val);
-      syncProfile("anniversaryDate", val);
     }
   };
   
@@ -652,10 +633,10 @@ export default function App() {
   const [activeSettingsTab, setActiveSettingsTab] = useState<"profile" | "persona" | "voice" | "analytics" | "backup">("profile");
 
   const [saveStatus, setSaveStatus] = useState<"synced" | "saving" | "local">("synced");
-  const [firebaseToast, setFirebaseToast] = useState<{ visible: boolean; message: string; type: "success" | "info" | "error" } | null>(null);
+  const [appToast, setAppToast] = useState<{ visible: boolean; message: string; type: "success" | "info" | "error" } | null>(null);
 
   const showToast = (message: string, type: "success" | "info" | "error" = "success") => {
-    setFirebaseToast({
+    setAppToast({
       visible: true,
       message,
       type
@@ -663,13 +644,13 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (firebaseToast?.visible) {
+    if (appToast?.visible) {
       const timer = setTimeout(() => {
-        setFirebaseToast(prev => prev ? { ...prev, visible: false } : null);
+        setAppToast(prev => prev ? { ...prev, visible: false } : null);
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [firebaseToast?.visible]);
+  }, [appToast?.visible]);
   const [ttsSpeed, setTtsSpeed] = useState(() => {
     try {
       return Number(localStorage.getItem("ttsSpeed") || "1.0");
@@ -716,14 +697,6 @@ export default function App() {
     return localStorage.getItem("hapticEnabled") !== "false";
   });
 
-  useEffect(() => {
-    localStorage.setItem("soundEnabled", String(soundEnabled));
-  }, [soundEnabled]);
-
-  useEffect(() => {
-    localStorage.setItem("hapticEnabled", String(hapticEnabled));
-  }, [hapticEnabled]);
-
   const resetPromptToDefault = (selectedMode: Mode) => {
     setCustomPrompts(prev => {
       const updated = {
@@ -752,7 +725,7 @@ export default function App() {
   const [voiceSpeed, setVoiceSpeed] = useState<number>(() => {
     return Number(localStorage.getItem("voiceSpeed")) || 1.0;
   });
-  const [isFirebaseSaving, setIsFirebaseSaving] = useState(false);
+
 
   // Sync prompt text when editing mode changes or customPrompts updates
   useEffect(() => {
@@ -830,7 +803,7 @@ export default function App() {
 
         const parsedChats: Chat[] = importedData.map(c => ({
           ...c,
-          id: c.id || generateId(),
+          id: c.id || Math.random().toString(36).substring(7),
           title: c.title || "চ্যাট হিস্ট্রি",
           messages: (c.messages || []).map((m: any) => ({
             ...m,
@@ -903,16 +876,14 @@ export default function App() {
     }
     // Update active chat's mode in memory
     if (activeChatId && mode) {
-      setChats(prev => {
-         const chat = prev.find(c => c.id === activeChatId);
-         if (chat && chat.mode !== mode) {
-            return prev.map(c => c.id === activeChatId ? { ...c, mode, updatedAt: new Date() } : c);
+      setChats(prev => prev.map(c => {
+         if (c.id === activeChatId && c.mode !== mode) {
+            return { ...c, mode, updatedAt: new Date() };
          }
-         return prev;
-      });
+         return c;
+      }));
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode]);
+  }, [mode, activeChatId]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (e.target.value.length > 1500) return;
@@ -979,7 +950,7 @@ export default function App() {
       .replace(/Humaira/g, name);
   };
 
-  const handleCompleteOnboarding = async () => {
+  const handleCompleteOnboarding = () => {
     setCompletedOnboarding(true);
     localStorage.setItem("completedOnboarding", "true");
     
@@ -988,85 +959,6 @@ export default function App() {
     handleUpdateProfileField("userProfilePic", selectedOnboardingPic);
     setBotName(typedBotName);
     localStorage.setItem("botName", typedBotName);
-    
-    if (firebaseUser && firebaseUser.uid !== "local_guest") {
-      try {
-        setSaveStatus("saving");
-        const userDocRef = doc(db, "users", firebaseUser.uid);
-        await setDoc(userDocRef, {
-          name: typedUserName,
-          photoURL: selectedOnboardingPic,
-          role: "user",
-          email: firebaseUser.email || "",
-          loveLanguage: loveLanguage || "Words of Affirmation",
-          anniversaryDate: anniversaryDate || "",
-          xp: xp || 1250,
-          streak: streak || 1,
-          botName: typedBotName,
-          aiAvatarSeed: aiAvatarSeed || "Sara",
-          completedOnboarding: true
-        });
-        setSaveStatus("synced");
-      } catch (err) {
-        console.error("Failed to save completed onboarding to Firestore:", err);
-        setSaveStatus("local");
-      }
-    }
-  };
-
-  const syncProfile = async (field: string, value: any) => {
-    try {
-      if (typeof value === "object") {
-        localStorage.setItem(field, JSON.stringify(value));
-      } else {
-        localStorage.setItem(field, String(value));
-      }
-      
-      if (firebaseUser && firebaseUser.uid !== "local_guest") {
-        setSaveStatus("saving");
-        const userDocRef = doc(db, "users", firebaseUser.uid);
-        let mappedField = field;
-        if (field === "userName" || field === "name") mappedField = "name";
-        if (field === "userProfilePic" || field === "photoURL") mappedField = "photoURL";
-        
-        await updateDoc(userDocRef, {
-          [mappedField]: value
-        });
-        setSaveStatus("synced");
-      } else {
-        setSaveStatus("local");
-      }
-    } catch (_) {
-      setSaveStatus("local");
-    }
-  };
-
-  const syncChatData = async (chat: Chat) => {
-    try {
-      if (firebaseUser && firebaseUser.uid !== "local_guest") {
-        setSaveStatus("saving");
-        const rawChat = {
-          id: chat.id,
-          title: chat.title,
-          mode: chat.mode,
-          createdAt: chat.createdAt.toISOString ? chat.createdAt.toISOString() : new Date(chat.createdAt).toISOString(),
-          updatedAt: chat.updatedAt.toISOString ? chat.updatedAt.toISOString() : new Date(chat.updatedAt).toISOString(),
-          messages: chat.messages.map(m => ({
-            id: m.id,
-            role: m.role,
-            content: m.content || "",
-            timestamp: m.timestamp.toISOString ? m.timestamp.toISOString() : new Date(m.timestamp).toISOString(),
-            status: m.status || "sent",
-            ...(m.attachments ? { attachments: m.attachments } : {})
-          }))
-        };
-        await setDoc(doc(db, "users", firebaseUser.uid, "chats", chat.id), rawChat);
-        setSaveStatus("synced");
-      }
-    } catch (err) {
-      console.error("Error syncing chat to Firestore:", err);
-      setSaveStatus("local");
-    }
   };
 
   const activeChat = useMemo(() => chats.find(c => c.id === activeChatId) || null, [chats, activeChatId]);
@@ -1112,17 +1004,8 @@ export default function App() {
     setIsSidebarOpen(false);
   };
 
-  const deleteChat = async (id: string, e: React.MouseEvent) => {
+  const deleteChat = (id: string, e: React.MouseEvent) => {
      e.stopPropagation();
-     if(firebaseUser && firebaseUser.uid !== "local_guest") {
-       try {
-         await deleteDoc(doc(db, "users", firebaseUser.uid, "chats", id));
-       } catch (error) {
-         try {
-           handleFirestoreError(error, OperationType.DELETE, `users/${firebaseUser.uid}/chats/${id}`);
-         } catch (_) {}
-       }
-     }
      setChats(prev => prev.filter(c => c.id !== id));
      if(activeChatId === id) setActiveChatId(null);
   };
@@ -1138,7 +1021,7 @@ export default function App() {
     if (!currentChatId) {
        const chatTitle = text ? text.substring(0, 30) : "ইমেজ চ্যাট";
        const newChat: Chat = {
-          id: generateId(),
+          id: Math.random().toString(36).substring(7),
           title: chatTitle,
           messages: [],
           mode: mode,
@@ -1146,13 +1029,13 @@ export default function App() {
           updatedAt: new Date()
        };
        setChats(prev => [newChat, ...prev]);
-       syncChatData(newChat);
+       // syncChatData(newChat);
        currentChatId = newChat.id;
        setActiveChatId(newChat.id);
     }
 
     const userMsg: Message = { 
-      id: generateId(), 
+      id: Math.random().toString(36).substring(7), 
       role: "user", 
       content: text, 
       timestamp: new Date(), 
@@ -1171,20 +1054,16 @@ export default function App() {
       setAttachedFiles([]);
       localStorage.removeItem(`chatDraft_${currentChatId || 'home'}`);
 
-      if (firebaseUser && firebaseUser.uid !== "local_guest") {
+      if (localUser) {
           const newXp = xp + 10;
           setXp(newXp);
-          syncProfile("xp", newXp);
+          localStorage.setItem("xp", String(newXp));
           
           if (achievements.length === 0) {
               const newAchievements = ["First Chat"];
               setAchievements(newAchievements);
-              syncProfile("achievements", newAchievements);
+              localStorage.setItem("achievements", JSON.stringify(newAchievements));
           }
-      } else {
-          const newXp = xp + 10;
-          setXp(newXp);
-          try { localStorage.setItem("xp", String(newXp)); } catch(_) {}
       }
     }
 
@@ -1193,7 +1072,7 @@ export default function App() {
     abortControllerRef.current = new AbortController();
 
     let fullText = "";
-    const assistantId = generateId();
+    const assistantId = Math.random().toString(36).substring(7);
 
     // Initial assistant message placeholder
     const assistantMsg: Message = { id: assistantId, role: "assistant", content: "", timestamp: new Date(), status: "sent" };
@@ -1295,7 +1174,7 @@ export default function App() {
                  return m;
              });
              currentChats[updatedChatIndex] = chat;
-             syncChatData(chat);
+             // syncChatData(chat);
          }
          return currentChats;
       });
@@ -1345,7 +1224,7 @@ export default function App() {
   };
 
   return (
-     <div className="flex flex-col min-h-screen w-full bg-white dark:bg-[#0c111e] text-slate-850 dark:text-white font-sans transition-colors duration-300">
+     <div className="flex flex-col min-h-screen w-full bg-white dark:bg-[#0b0c16] text-slate-850 dark:text-white font-sans transition-colors duration-300">
         {!completedOnboarding ? (
          /* 2. DUOLINGO PROGRESS-GUIDED COMPACT ONBOARDING STEP */
          <div className="flex-1 flex flex-col justify-center items-center p-4 select-none relative overflow-hidden animate-fade-in animate-duration-300">
@@ -1378,16 +1257,16 @@ export default function App() {
                   </p>
 
                   <div className="grid grid-cols-2 gap-3 mt-5 w-full max-h-[190px] overflow-y-auto pr-1">
-                     {firebaseUser?.photoURL && (
+                     {false && (
                         <button
-                           onClick={() => { setSelectedOnboardingPic(firebaseUser.photoURL || ""); playEffects("light"); }}
+                           onClick={() => { setSelectedOnboardingPic(localUser.photoURL || ""); playEffects("light"); }}
                            className={cn("relative hover:bg-slate-50 dark:hover:bg-[#202f36] rounded-2xl border-2 transition-all p-2.5 active:translate-y-[2px] cursor-pointer flex flex-col justify-center items-center gap-1 bg-white dark:bg-[#131f24] h-20",
-                              selectedOnboardingPic === firebaseUser.photoURL 
+                              selectedOnboardingPic === localUser.photoURL 
                                 ? "border-[#1cb0f6] border-b-[5px] bg-[#1cb0f6]/5" 
                                 : "border-slate-200 dark:border-[#37464f] border-b-[4px]"
                            )}
                         >
-                           <img src={firebaseUser.photoURL} className="w-9 h-9 object-cover rounded-full" referrerPolicy="no-referrer" />
+                           <img src={localUser.photoURL} className="w-9 h-9 object-cover rounded-full" referrerPolicy="no-referrer" />
                            <span className="text-[10px] font-black text-slate-700 dark:text-slate-300">গুগল ছবি</span>
                         </button>
                      )}
@@ -1501,7 +1380,7 @@ export default function App() {
          /* 3. CORE MULTI-COLUMN RESPONSIVE LAYOUT (No phone frame mockups!) */
          <div className="flex-1 flex h-full w-full relative overflow-hidden">
             {/* Left Desktop Persistent Sidebar */}
-            <div className="hidden lg:flex flex-col w-[290px] h-full shrink-0 border-r border-slate-200/65 dark:border-slate-800/45 relative overflow-hidden bg-white dark:bg-[#0c111e] transition-colors duration-300">
+            <div className="hidden lg:flex flex-col w-[290px] h-full shrink-0 border-r border-slate-200/65 dark:border-slate-800/45 relative overflow-hidden bg-white dark:bg-[#0b0c16] transition-colors duration-300">
                <Sidebar
                   theme={theme}
                   setTheme={setTheme}
@@ -1541,7 +1420,7 @@ export default function App() {
                         animate={{ x: 0 }}
                         exit={{ x: "-100%" }}
                         transition={{ type: "spring", damping: 25, stiffness: 220 }}
-                        className="fixed top-0 left-0 bottom-0 w-[275px] z-50 flex flex-col bg-white dark:bg-[#0c111e] border-r border-slate-200 dark:border-slate-800 shadow-2xl lg:hidden"
+                        className="fixed top-0 left-0 bottom-0 w-[275px] z-50 flex flex-col bg-white dark:bg-[#0b0c16] border-r border-slate-200 dark:border-slate-800 shadow-2xl lg:hidden"
                      >
                         <Sidebar
                            theme={theme}
@@ -1586,7 +1465,7 @@ export default function App() {
                      userProfilePic={userProfilePic}
                      changeUserProfilePic={changeUserProfilePic}
                      ONBOARDING_AVATARS={ONBOARDING_AVATARS}
-                     firebaseUser={firebaseUser}
+                     
                      botName={botName}
                      setBotName={setBotName}
                      aiCreativity={aiCreativity}
@@ -1607,7 +1486,7 @@ export default function App() {
                      handleExportData={handleExportData}
                      handleImportData={handleImportData}
                      handleWipeData={handleWipeData}
-                     isFirebaseSaving={isFirebaseSaving}
+                     
                      analyzeSentiment={analyzeSentiment}
                      playEffects={playEffects}
                   />
@@ -1615,7 +1494,7 @@ export default function App() {
                   <>
                      {/* Messenger Top Header Panel */}
                      <header className={cn("h-[64px] min-h-[64px] shrink-0 border-b flex items-center justify-between px-4 transition-colors duration-300 z-10 shadow-xs backdrop-blur-md", 
-                        theme === "dark" ? "border-slate-800/80 bg-[#161e31]/95" : "border-slate-150 bg-white/95"
+                        theme === "dark" ? "border-slate-800/80 bg-[#0f111a]/95" : "border-pink-100/60 bg-pink-50/60"
                      )}>
                         {/* Mobile Drawer Menu trigger */}
                         <div className="flex items-center gap-3">
@@ -1684,27 +1563,13 @@ export default function App() {
                         ref={scrollRef as any} 
                         onScroll={handleScroll}
                         className={cn("flex-1 overflow-y-auto px-4 py-3 pb-8 flex flex-col gap-4 scroll-smooth select-text", 
-                           theme === "dark" ? "bg-[#0b0f19]/45" : "bg-[#f4f6fc]"
+                           theme === "dark" ? "bg-gradient-to-b from-[#0f1020] to-[#070810]" : "bg-gradient-to-b from-[#fff5f6] via-[#fffbfd] to-[#fffbfc]"
                         )}
                      >
                         {(!activeChat || activeChat.messages.length === 0) ? (
                            /* Screen Welcomer center template when zero messages */
                            <div className="flex-1 flex flex-col items-center justify-center w-full px-6 text-center my-auto py-12 select-none animate-fade-in">
                               
-                              {/* Mascot speech bubble */}
-                              <div className="relative mb-8 max-w-sm">
-                                 <div className="bg-white dark:bg-[#1a2d34] border-2 border-b-6 border-slate-200 dark:border-[#37464f] text-slate-800 dark:text-white rounded-[24px] px-6 py-4 text-sm font-black shadow-md relative leading-relaxed">
-                                    হাই সোনা! 🦉
-                                    <p className="text-xs font-bold text-slate-500 dark:text-[#afc2cb] mt-1.5">
-                                       আজ ডায়েরিতে মনের কী কথা লিখে রাখবে? চলো গল্প করি! 💚
-                                    </p>
-                                    
-                                    {/* Bubble tail element */}
-                                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-[12px] border-x-transparent border-t-[12px] border-t-white dark:border-t-[#1a2d34] z-10" />
-                                    <div className="absolute top-full left-1/2 -translate-x-1/2 border-x-[13px] border-x-transparent border-t-[13px] border-t-slate-200 dark:border-t-[#37464f]" />
-                                 </div>
-                              </div>
-
                               {/* Tactile Mascot Circle */}
                               <motion.div 
                                  className="relative mb-4"
@@ -2091,28 +1956,28 @@ export default function App() {
 
                            {/* Firestore status toast notification */}
                            <AnimatePresence>
-                              {firebaseToast && firebaseToast.visible && (
+                              {appToast && appToast.visible && (
                                  <motion.div 
                                     initial={{ opacity: 0, y: 30, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 20, scale: 0.95 }}
                                     className={cn(
                                        "absolute bottom-24 left-1/2 -translate-x-1/2 z-[150] flex items-center gap-2 px-3 py-2.5 rounded-2xl shadow-xl border backdrop-blur-md max-w-[85%] text-xs font-black whitespace-nowrap",
-                                       firebaseToast.type === "success" 
+                                       appToast.type === "success" 
                                           ? "bg-slate-900/95 text-green-400 border-green-500/20" 
-                                          : firebaseToast.type === "error"
+                                          : appToast.type === "error"
                                              ? "bg-red-95/95 text-red-100 border-red-500/20"
                                              : "bg-slate-900/95 text-orange-400 border-orange-500/20"
                                     )}
                                  >
-                                    {firebaseToast.type === "success" ? (
+                                    {appToast.type === "success" ? (
                                        <Check className="w-3.5 h-3.5 stroke-[3.5] text-green-400 shrink-0" />
-                                    ) : firebaseToast.type === "error" ? (
+                                    ) : appToast.type === "error" ? (
                                        <X className="w-3.5 h-3.5 stroke-[3.5] text-red-100 shrink-0 animate-bounce" />
                                     ) : (
                                        <Sparkles className="w-3.5 h-3.5 text-orange-400 shrink-0" />
                                     )}
-                                    <span>{firebaseToast.message}</span>
+                                    <span>{appToast.message}</span>
                                  </motion.div>
                               )}
                            </AnimatePresence>
@@ -2229,7 +2094,79 @@ export default function App() {
          )}
       </AnimatePresence>
  
+      {/* Dynamic Settings Sidebar overlay */}
+      <AnimatePresence>
+         {isSettingsOpen && (
+            <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 0.5 }}
+               exit={{ opacity: 0 }}
+               className="absolute inset-0 bg-transparent lg:bg-black/40 z-40 backdrop-blur-[1px]"
+               onClick={() => {
+                  setIsSettingsOpen(false);
+                  playEffects("light");
+               }}
+            />
+         )}
+         
+         {isSettingsOpen && (
+            <motion.div 
+               initial={{ x: "100%" }}
+               animate={{ x: 0 }}
+               exit={{ x: "100%" }}
+               transition={{ type: "spring", damping: 25, stiffness: 220 }}
+               className={cn("absolute right-0 top-0 bottom-0 w-full sm:w-[580px] z-50 flex flex-col shadow-2xl overflow-hidden border-l", 
+                  theme === "dark" ? "bg-[#0c111e] border-slate-900" : "bg-white border-slate-205"
+               )}
+            >
+               <div className="flex-1 overflow-hidden relative flex flex-col h-full w-full">
+                  <div className={cn("flex-1 overflow-hidden flex flex-col relative", 
+                     theme === "dark" ? "bg-[#0c111e]" : "bg-white"
+                  )}>
+                     <SettingsPanel
+                        theme={theme}
+                        activeSettingsTab={activeSettingsTab}
+                        setActiveSettingsTab={setActiveSettingsTab}
+                        setIsSettingsOpen={setIsSettingsOpen}
+                        userName={userName}
+                        setUserName={setUserName}
+                        loveLanguage={loveLanguage}
+                        setLoveLanguage={setLoveLanguage}
+                        anniversaryDate={anniversaryDate}
+                        setAnniversaryDate={setAnniversaryDate}
+                        userProfilePic={userProfilePic}
+                        changeUserProfilePic={changeUserProfilePic}
+                        ONBOARDING_AVATARS={ONBOARDING_AVATARS}
+  
+                        botName={botName}
+                        setBotName={setBotName}
+                        aiCreativity={aiCreativity}
+                        setAiCreativity={setAiCreativity}
+                        customSysPrompts={customSysPrompts}
+                        editPromptMode={editPromptMode}
+                        setEditPromptMode={setEditPromptMode}
+                        promptEditText={promptEditText}
+                        setPromptEditText={setPromptEditText}
+                        saveCustomPrompt={saveCustomPrompt}
+                        resetCustomPrompt={resetCustomPrompt}
+                        soundEnabled={soundEnabled}
+                        setSoundEnabled={setSoundEnabled}
+                        hapticEnabled={hapticEnabled}
+                        setHapticEnabled={setHapticEnabled}
+                        voiceSpeed={voiceSpeed}
+                        setVoiceSpeed={setVoiceSpeed}
+                        handleExportData={handleExportData}
+                        handleImportData={handleImportData}
+                        handleWipeData={handleWipeData}
 
+                        analyzeSentiment={analyzeSentiment}
+                        playEffects={playEffects}
+                     />
+                  </div>
+               </div>
+            </motion.div>
+         )}
+      </AnimatePresence>
     </div>
   );
 }
