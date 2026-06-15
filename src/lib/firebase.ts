@@ -10,14 +10,14 @@ export const db = initializeFirestore(app, {
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-async function testConnection() {
+// Test connection on demand (not auto-executed)
+export async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
   } catch (error) {
     console.warn("Note: Firestore connection note (could be offline or in preview sandbox mode):", error);
   }
 }
-testConnection();
 
 export const loginWithGoogle = async () => {
     try {
