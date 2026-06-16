@@ -50,7 +50,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const leagueName = xp >= 2500 ? "Diamond League 💎" : xp >= 1800 ? "Emerald League 💚" : xp >= 1200 ? "Gold League 🟡" : "Bronze League 🥉";
 
   return (
-    <div className="flex flex-col h-full w-full select-none bg-[#fffbfb] dark:bg-[#0e0f17] border-r-2 border-slate-150 dark:border-slate-850">
+    <div className="flex flex-col h-full w-full select-none bg-[#fffbfb] dark:bg-[#0e0f17] border-r-2 border-slate-200 dark:border-slate-800">
       {/* Brand & Character Emblem */}
       <div className="p-5 flex items-center justify-between border-b-2 border-pink-100/40 dark:border-[#1e2030] shrink-0 bg-gradient-to-r from-pink-50/40 to-rose-50/45 dark:from-[#141624] dark:to-[#121422]">
         <div className="flex items-center gap-3">
@@ -238,7 +238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       "group flex items-center justify-between w-full rounded-[16px] transition-all border-2 border-b-[4px] pl-1 pr-2 py-1 select-none active:border-b-2 active:translate-y-[2px]", 
                       isActive
                         ? "bg-[#ff9600]/10 border-[#ff9600] text-[#ff9600] dark:bg-[#ff9600]/5 dark:border-[#ff9600]"
-                        : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-650 dark:text-[#afc2cb] hover:bg-slate-50 dark:hover:bg-[#202f36]"
+                        : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-600 dark:text-[#afc2cb] hover:bg-slate-50 dark:hover:bg-[#202f36]"
                     )}
                   >
                     <button 

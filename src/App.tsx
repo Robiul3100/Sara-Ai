@@ -1224,7 +1224,7 @@ export default function App() {
   };
 
   return (
-     <div className="flex flex-col min-h-screen w-full bg-white dark:bg-[#0b0c16] text-slate-850 dark:text-white font-sans transition-colors duration-300">
+     <div className="flex flex-col min-h-screen w-full bg-white dark:bg-[#0b0c16] text-slate-800 dark:text-white font-sans transition-colors duration-300">
         {!completedOnboarding ? (
          /* 2. DUOLINGO PROGRESS-GUIDED COMPACT ONBOARDING STEP */
          <div className="flex-1 flex flex-col justify-center items-center p-4 select-none relative overflow-hidden animate-fade-in animate-duration-300">
@@ -1314,7 +1314,7 @@ export default function App() {
                   <div className="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-950/20 flex items-center justify-center text-[22px] shadow-sm mb-4 mt-2">
                      🤖
                   </div>
-                  <h3 className="text-base font-black text-slate-850 dark:text-white capitalize text-center">
+                  <h3 className="text-base font-black text-slate-800 dark:text-white capitalize text-center">
                      আপনার ও আপনার চ্যাটবটের নাম দিন
                   </h3>
                   <p className="text-[10px] text-gray-550 dark:text-gray-400 font-bold text-center mt-1.5 leading-relaxed px-1">
@@ -1323,13 +1323,13 @@ export default function App() {
 
                   <div className="flex flex-col gap-3.5 w-full mt-5">
                      <div className="flex flex-col gap-1">
-                        <label className="text-[9px] font-extrabold text-slate-405 dark:text-gray-505 uppercase tracking-widest pl-1">আপনার নাম (Your Name)</label>
+                        <label className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest pl-1">আপনার নাম (Your Name)</label>
                         <input 
                            type="text" 
                            value={typedUserName} 
                            onChange={(e) => setTypedUserName(e.target.value)} 
                            className={cn("w-full rounded-2xl p-2.5 font-bold text-xs border outline-none focus:ring-1 focus:ring-orange-500 transition-all text-center leading-normal", 
-                              theme === "dark" ? "bg-slate-950 border-slate-900 text-white" : "bg-white border-slate-202 text-gray-800"
+                              theme === "dark" ? "bg-slate-950 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-800"
                            )}
                            placeholder="যেমন: শ্রাবণী সারা খান, সিয়াম..."
                            maxLength={30}
@@ -1337,13 +1337,13 @@ export default function App() {
                      </div>
 
                      <div className="flex flex-col gap-1">
-                        <label className="text-[9px] font-extrabold text-slate-405 dark:text-gray-505 uppercase tracking-widest pl-1">চ্যাটবটের কাস্টম নাম (AI Name)</label>
+                        <label className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest pl-1">চ্যাটবটের কাস্টম নাম (AI Name)</label>
                         <input 
                            type="text" 
                            value={typedBotName} 
                            onChange={(e) => setTypedBotName(e.target.value)} 
                            className={cn("w-full rounded-2xl p-2.5 font-bold text-xs border outline-none focus:ring-1 focus:ring-orange-500 transition-all text-center leading-normal", 
-                              theme === "dark" ? "bg-slate-950 border-slate-900 text-white" : "bg-white border-slate-202 text-gray-800"
+                              theme === "dark" ? "bg-slate-950 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-800"
                            )}
                            placeholder="যেমন: সারা এআই, তিশা..."
                            maxLength={30}
@@ -1357,7 +1357,7 @@ export default function App() {
                            setOnboardingStep("avatar");
                            playEffects("light");
                         }}
-                        className="py-3 px-4 bg-slate-105 text-slate-600 rounded-2xl hover:bg-slate-205 transition-all text-xs font-black active:scale-95 cursor-pointer dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-805"
+                        className="py-3 px-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-all text-xs font-black active:scale-95 cursor-pointer dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                      >
                         ⬅️ ব্যাক
                      </button>
@@ -1502,7 +1502,7 @@ export default function App() {
                               type="button"
                               onClick={() => { setIsSidebarOpen(true); playEffects("light"); }}
                               className={cn("p-1.5 rounded-xl border transition-all active:scale-90 cursor-pointer lg:hidden",
-                                 theme === "dark" ? "text-slate-300 border-slate-800 hover:bg-slate-900" : "text-slate-650 border-slate-205 hover:bg-slate-50"
+                              theme === "dark" ? "text-slate-300 border-slate-800 hover:bg-slate-900" : "text-slate-600 border-slate-200 hover:bg-slate-50"
                               )}
                            >
                               <Menu className="w-5 h-5" />
@@ -1515,7 +1515,7 @@ export default function App() {
                                  <span className="font-extrabold text-xs text-slate-800 dark:text-white leading-none flex items-center gap-1.5 truncate max-w-[124px] sm:max-w-[200px]" style={{ display: 'inline-flex' }}>
                                     {botName} • {MODES[mode].label}
                                  </span>
-                                 <span className="text-[9px] text-slate-405 dark:text-slate-505 font-bold leading-normal mt-0.5 truncate max-w-[124px] sm:max-w-[200px]" style={{ display: 'inline-block' }}>শ্রাবণী সারা খান • সক্রিয়</span>
+                                 <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold leading-normal mt-0.5 truncate max-w-[124px] sm:max-w-[200px]" style={{ display: 'inline-block' }}>{userName || "USER"} • সক্রিয়</span>
                               </div>
                            </div>
                         </div>
@@ -1528,7 +1528,7 @@ export default function App() {
                               className={cn("w-8.5 h-8.5 rounded-xl flex items-center justify-center border transition-all duration-250 active:scale-90 cursor-pointer",
                                  soundEnabled 
                                     ? "text-orange-500 bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-900/50" 
-                                    : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-505 dark:hover:text-slate-350 dark:hover:bg-slate-800/45"
+                                    : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-500 dark:hover:text-slate-350 dark:hover:bg-slate-800/45"
                               )}
                               title={soundEnabled ? "সাউন্ড বন্ধ করুন" : "সাউন্ড चालू করুন"}
                            >
@@ -1631,7 +1631,7 @@ export default function App() {
                                                 m.role === "user" 
                                                    ? "text-white rounded-tr-none border-orange-500/10 shadow-[0_2px_8px_rgba(249,115,22,0.06)] bg-gradient-to-r" 
                                                    : theme === "dark" 
-                                                      ? "bg-slate-900/80 text-slate-100 rounded-tl-none border-slate-805 hover:bg-slate-850" 
+                                                      ? "bg-slate-900/80 text-slate-100 rounded-tl-none border-slate-800 hover:bg-slate-800" 
                                                       : "bg-white text-slate-800 rounded-tl-none border-slate-200/55 shadow-[0_2px_8px_rgba(0,0,0,0.02)] hover:border-slate-300"
                                              )}
                                              style={m.role === "user" ? { 
@@ -1664,7 +1664,7 @@ export default function App() {
                                                 "absolute bottom-[-15px] opacity-0 group-hover/bb:opacity-100 focus-within:opacity-100 transition-all duration-200 flex items-center gap-1 p-0.5 rounded-lg border shadow-xs z-10 backdrop-blur-md select-none",
                                                 m.role === "user" 
                                                    ? "right-2 bg-gradient-to-r from-orange-600 to-amber-600 border-orange-500/10 text-white" 
-                                                   : "left-2 bg-white/95 border-slate-150 text-slate-500 dark:bg-slate-900/95 dark:border-slate-800 dark:text-slate-400"
+                                                   : "left-2 bg-white/95 border-slate-200 text-slate-500 dark:bg-slate-900/95 dark:border-slate-800 dark:text-slate-400"
                                              )}>
                                                 <button
                                                    type="button"
@@ -1759,7 +1759,7 @@ export default function App() {
                      <div className={cn("shrink-0 p-3 sm:p-4 w-full border-t transition-all duration-300 relative z-20", 
                         isDragging 
                            ? "bg-amber-500/10 dark:bg-amber-500/5 border-amber-500 shadow-lg animate-pulse" 
-                           : (theme === "dark" ? "border-slate-800 bg-[#161e31]/95 backdrop-blur-md" : "border-slate-150 bg-white/95 backdrop-blur-md")
+                           : (theme === "dark" ? "border-slate-800 bg-[#161e31]/95 backdrop-blur-md" : "border-slate-200 bg-white/95 backdrop-blur-md")
                         )}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
@@ -1788,7 +1788,7 @@ export default function App() {
                                        className={cn("px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold border transition-all shrink-0 snap-align-start hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-2xs whitespace-nowrap",
                                           theme === "dark" 
                                              ? "bg-slate-900 border-slate-800 text-slate-300 hover:text-white" 
-                                             : "bg-white border-slate-205 text-slate-605 hover:bg-slate-50"
+                                             : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
                                        )}
                                     >
                                        {chip.text}
@@ -1851,7 +1851,7 @@ export default function App() {
                               <div className={cn("flex-1 flex items-end px-3 py-1.5 rounded-2xl border transition-all duration-300 focus-within:ring-2 focus-within:ring-[#f97316]/12 shadow-sm",
                                  theme === "dark" 
                                     ? "bg-slate-900 border-slate-800 focus-within:border-[#f97316]/65 text-[#f3f4f6]" 
-                                    : "bg-slate-50 border-slate-150 focus-within:border-[#f97316]/60 text-slate-800"
+                                    : "bg-slate-50 border-slate-200 focus-within:border-[#f97316]/60 text-slate-800"
                               )}>
                                  {/* File attachments icon */}
                                  <div className="flex items-center gap-1 pr-1.5 pb-0.5 shrink-0 select-none">
@@ -1875,7 +1875,7 @@ export default function App() {
                                        className={cn("w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-205 active:scale-95 border relative",
                                           isListening
                                              ? "bg-red-500/10 border-red-300 text-red-500 dark:bg-red-950/30 dark:border-red-900/40 animate-pulse"
-                                             : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-505 dark:hover:text-slate-355 dark:hover:bg-slate-800/45"
+                                             : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-500 dark:hover:text-slate-400 dark:hover:bg-slate-800/45"
                                        )}
                                        title={isListening ? "রেকর্ডিং বন্ধ করুন" : "ভয়েস টাইপিং"}
                                     >
@@ -1919,7 +1919,7 @@ export default function App() {
                                        <span className={cn("text-[8.5px] font-black px-1.5 py-0.5 rounded-md tracking-wider transition-all",
                                           inputValue.length >= 1300 
                                              ? "bg-red-500/10 text-red-500 font-extrabold" 
-                                             : "bg-slate-100 dark:bg-slate-800 text-slate-405 dark:text-slate-505"
+                                             : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500"
                                        )}>
                                           {inputValue.length}/1500
                                        </span>
@@ -1946,7 +1946,7 @@ export default function App() {
                                  className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 shadow-md shrink-0 text-white",
                                     (inputValue.trim() || attachedFiles.length > 0)
                                        ? "bg-gradient-to-r from-orange-500 via-[#f97316] to-rose-500 hover:brightness-105 shadow-orange-500/10"
-                                       : "bg-slate-105 dark:bg-slate-800 text-slate-400 dark:text-slate-650 cursor-not-allowed shadow-none"
+                                       : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed shadow-none"
                                  )}
                                  title="বার্তা পাঠান"
                               >
@@ -2116,7 +2116,7 @@ export default function App() {
                exit={{ x: "100%" }}
                transition={{ type: "spring", damping: 25, stiffness: 220 }}
                className={cn("absolute right-0 top-0 bottom-0 w-full sm:w-[580px] z-50 flex flex-col shadow-2xl overflow-hidden border-l", 
-                  theme === "dark" ? "bg-[#0c111e] border-slate-900" : "bg-white border-slate-205"
+                  theme === "dark" ? "bg-[#0c111e] border-slate-900" : "bg-white border-slate-200"
                )}
             >
                <div className="flex-1 overflow-hidden relative flex flex-col h-full w-full">
