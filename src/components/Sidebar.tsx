@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, X, Trash2, Settings, Moon, Sun, User, MessageCircle, Heart, Smile, Anchor, Trophy, Flame, Star } from "lucide-react";
+import { Plus, X, Trash2, Settings, MessageCircle, Heart, Flame, Star, Sparkles } from "lucide-react";
 import { Mode, Chat, MODES, MODE_THEMES } from "../types";
 import { cn } from "../lib/utils";
 
@@ -27,7 +27,6 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({
   theme,
-  setTheme,
   isSidebarOpen,
   setIsSidebarOpen,
   createNewChat,
@@ -50,22 +49,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const leagueName = xp >= 2500 ? "Diamond League 💎" : xp >= 1800 ? "Emerald League 💚" : xp >= 1200 ? "Gold League 🟡" : "Bronze League 🥉";
 
   return (
-    <div className="flex flex-col h-full w-full select-none bg-[#fffbfb] dark:bg-[#0e0f17] border-r-2 border-slate-200 dark:border-slate-800">
+    <div className="flex flex-col h-full w-full select-none bg-[#090b14] text-slate-200 border-r border-[#1a1c32]">
       {/* Brand & Character Emblem */}
-      <div className="p-5 flex items-center justify-between border-b-2 border-pink-100/40 dark:border-[#1e2030] shrink-0 bg-gradient-to-r from-pink-50/40 to-rose-50/45 dark:from-[#141624] dark:to-[#121422]">
+      <div className="p-4 sm:p-5 flex items-center justify-between border-b border-[#1a1c32] shrink-0 bg-[#0c0e1b]">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-[#58cc02] border-2 border-b-[5px] border-[#46a302] p-1 flex items-center justify-center relative shadow-sm group hover:scale-[1.03] transition-transform">
-            <img src={saraAvatar || "https://api.dicebear.com/7.x/adventurer/svg?seed=Sara"} alt="Sara" className="w-full h-full object-cover rounded-xl" />
-            <div className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-rose-500 rounded-full flex items-center justify-center text-[9px] text-white font-extrabold border border-white">
-              ♥
-            </div>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 p-0.5 flex items-center justify-center relative shadow-md">
+            <img src={saraAvatar || "https://api.dicebear.com/7.x/adventurer/svg?seed=Sara"} alt="Sara" className="w-full h-full object-cover rounded-lg" />
+            <span className="absolute -top-1 -right-1 flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+            </span>
           </div>
           <div className="flex flex-col">
-            <span className="font-extrabold text-base tracking-tight text-[#ff9600] dark:text-[#ffc800] leading-none">
-              সারা এআই
+            <span className="font-extrabold text-sm sm:text-base tracking-tight text-white flex items-center gap-1">
+              সারা এআই <Sparkles className="w-3.5 h-3.5 text-orange-400 fill-current" />
             </span>
-            <span className="text-[10px] text-slate-400 dark:text-[#afc2cb] font-bold mt-1">
-              কিউটেস্ট জীবনসঙ্গী 🦉
+            <span className="text-[10px] text-slate-400 font-medium">
+              আপনার কিউট এআই সঙ্গী 🦉
             </span>
           </div>
         </div>
@@ -73,91 +73,78 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Mobile Close Icon */}
         <button 
           onClick={() => { setIsSidebarOpen(false); playEffects("light"); }}
-          className="p-2 rounded-xl transition-all active:scale-90 cursor-pointer lg:hidden border-2 border-slate-200 dark:border-[#37464f] hover:bg-slate-100 dark:hover:bg-[#202f36] text-slate-500 dark:text-[#afc2cb]"
+          className="p-1.5 rounded-lg transition-all active:scale-95 cursor-pointer lg:hidden border border-slate-800 bg-[#121324] hover:bg-slate-900 text-slate-400 hover:text-white"
           title="বন্ধ করুন"
         >
-          <X className="w-4 h-4 stroke-[3]" />
+          <X className="w-4 h-4 stroke-[2.5]" />
         </button>
       </div>
 
-      {/* Stats Quick Status (Duolingo Header Items) */}
-      <div className="px-5 py-3.5 bg-pink-50/10 dark:bg-[#111322]/60 grid grid-cols-2 gap-2 text-xs font-black border-b-2 border-pink-100/30 dark:border-[#1e2030]">
-        <div className="flex items-center gap-2 p-1.5 rounded-xl border-2 border-b-4 border-pink-100/40 dark:border-[#1e2030] bg-[#fffcfc] dark:bg-[#0e0f17]/50">
-          <Flame className="w-4 h-4 text-[#ff9600] fill-current animate-pulse" />
+      {/* Stats Quick Status Header items */}
+      <div className="px-4 py-3 bg-[#0d0f1c]/50 grid grid-cols-2 gap-2 text-xs border-b border-[#1a1c32]">
+        <div className="flex items-center gap-2 p-2 rounded-xl border border-[#1e213b] bg-[#111222]">
+          <Flame className="w-4 h-4 text-orange-500 fill-current animate-pulse shrink-0" />
           <div className="flex flex-col">
-            <span className="text-[9px] text-slate-400 dark:text-[#afc2cb] font-extrabold uppercase leading-none">Streak</span>
-            <span className="text-[#ff9600] text-xs font-black mt-0.5">{streak} Days</span>
+            <span className="text-[8.5px] text-slate-500 font-bold uppercase leading-none">Streak</span>
+            <span className="text-orange-400 text-[11px] font-black mt-0.5">{streak} দিন</span>
           </div>
         </div>
-        <div className="flex items-center gap-2 p-1.5 rounded-xl border-2 border-b-4 border-pink-100/40 dark:border-[#1e2030] bg-[#fffcfc] dark:bg-[#0e0f17]/50">
-          <Star className="w-4 h-4 text-[#ffc800] fill-current animate-bounce" />
+        <div className="flex items-center gap-2 p-2 rounded-xl border border-[#1e213b] bg-[#111222]">
+          <Star className="w-4 h-4 text-amber-400 fill-current shrink-0" />
           <div className="flex flex-col">
-            <span className="text-[9px] text-slate-400 dark:text-[#afc2cb] font-extrabold uppercase leading-none">Total XP</span>
-            <span className="text-[#ffc800] text-xs font-black mt-0.5">{xp} XP</span>
+            <span className="text-[8.5px] text-slate-500 font-bold uppercase leading-none">Total XP</span>
+            <span className="text-amber-300 text-[11px] font-black mt-0.5">{xp} XP</span>
           </div>
         </div>
       </div>
 
-      {/* Create New Chat Button (Squishy Duolingo Green Button) */}
-      <div className="p-4 shrink-0">
+      {/* Modern High Contrast New Chat button */}
+      <div className="p-3.5 shrink-0">
         <button 
           onClick={() => { createNewChat(); setIsSidebarOpen(false); playEffects("medium"); }} 
-          className="w-full py-3 rounded-2xl bg-[#58cc02] border-2 border-b-[6px] border-[#46a302] hover:bg-[#61df02] text-white flex items-center justify-center gap-2 font-black text-sm transition-all duration-150 active:border-b-2 active:translate-y-1 cursor-pointer select-none"
+          className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-orange-500 to-rose-500 hover:brightness-105 text-white flex items-center justify-center gap-2 font-black text-xs sm:text-sm transition-all active:scale-[0.98] cursor-pointer shadow-lg shadow-orange-500/10"
         >
-          <Plus className="w-4 h-4 stroke-[3]" /> নতুন চ্যাট শুরু করো
+          <Plus className="w-4 h-4 stroke-[3]" /> নতুন চ্যাট শুরু করুন
         </button>
       </div>
 
-      {/* Main Content Area (Scrollable Sections) */}
-      <div className="flex-1 overflow-y-auto w-full px-4 space-y-6 pb-4 scrollbar-none">
+      {/* Scrollable Side Panels */}
+      <div className="flex-1 overflow-y-auto w-full px-3.5 space-y-5 pb-4 scrollbar-none">
         
-        {/* Humor & Mood Modes Section */}
-        <div className="space-y-3">
+        {/* Mood Modes section */}
+        <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-xs font-extrabold tracking-wider uppercase text-slate-400 dark:text-[#afc2cb] select-none">
-              সারার মুড সমূহ
+            <h3 className="text-[10px] font-bold tracking-wider uppercase text-slate-550">
+              এআই মুড পরিবর্তন
             </h3>
-            <span className="text-[9px] bg-[#ff9600]/10 text-[#ff9600] font-black px-2 py-0.5 rounded-full border border-[#ff9600]/25">
-              মুড বদলাও
+            <span className="text-[8px] bg-indigo-500/10 text-indigo-400 font-extrabold px-1.5 py-0.5 rounded-md border border-indigo-500/20">
+              মুড লিস্ট
             </span>
           </div>
           
-          <div className="flex flex-col gap-2">
-            {(["NORMAL", "ROMANTIC", "FUN"] as Mode[]).map(m => {
+          <div className="flex flex-col gap-1.5">
+            {(["NORMAL", "ROMANTIC", "FUN", "ISLAMIC", "LEGEND"] as Mode[]).map(m => {
               const isActive = mode === m;
               const Icon = MODES[m].icon;
-              
-              // Duolingo themed configurations for each mood button
-              let themeBtnClass = "";
-              if (m === "ROMANTIC") {
-                themeBtnClass = isActive 
-                  ? "bg-rose-500 border-rose-700 text-white" 
-                  : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-700 dark:text-[#afc2cb] hover:bg-rose-50 dark:hover:bg-rose-950/20";
-              } else if (m === "FUN") {
-                themeBtnClass = isActive 
-                  ? "bg-[#ff9600] border-[#e07a00] text-white" 
-                  : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-700 dark:text-[#afc2cb] hover:bg-orange-50 dark:hover:bg-orange-950/20";
-              } else {
-                themeBtnClass = isActive 
-                  ? "bg-[#1cb0f6] border-[#1899d6] text-white" 
-                  : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-700 dark:text-[#afc2cb] hover:bg-blue-50 dark:hover:bg-blue-950/20";
-              }
+              const themeColor = MODE_THEMES[m].accent;
 
               return (
                 <button 
                   key={m} 
                   onClick={() => { setMode(m); setIsSidebarOpen(false); playEffects("medium"); }} 
                   className={cn(
-                    "px-4 py-2.5 rounded-[18px] font-extrabold text-xs flex items-center justify-between w-full text-left transition-all duration-100 border-2 border-b-[5px] active:border-b-2 active:translate-y-1 cursor-pointer select-none",
-                    themeBtnClass
+                    "px-3.5 py-2.5 rounded-lg text-xs font-bold flex items-center justify-between w-full text-left transition-all cursor-pointer transition-colors border",
+                    isActive 
+                      ? "bg-[#181a30] border-orange-500/20 text-white shadow-md shadow-black/10" 
+                      : "bg-[#0d0e19] border-[#18192d] text-slate-400 hover:text-white hover:bg-[#121424] hover:border-[#1e203c]"
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4 h-4 stroke-[3]" />
-                    <span className="font-extrabold text-[13px]">{MODES[m].label}</span>
+                  <div className="flex items-center gap-2.5">
+                    <Icon className="w-4 h-4 shrink-0 transition-transform" style={{ color: isActive ? themeColor : "#94a3b8" }} />
+                    <span className="font-bold text-[12.5px]">{MODES[m].label}</span>
                   </div>
                   {isActive && (
-                    <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full animate-ping" style={{ backgroundColor: themeColor }} />
                   )}
                 </button>
               );
@@ -165,156 +152,89 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Premium/Pro Modes Section */}
-        <div className="space-y-3">
+        {/* Existing Active Chats Logs List */}
+        <div className="space-y-2 pt-1.5">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-xs font-extrabold tracking-wider uppercase text-slate-400 dark:text-[#afc2cb] select-none">
-              স্পেশাল লেভেল মোড
+            <h3 className="text-[10px] font-bold tracking-wider uppercase text-slate-550">
+              সাম্প্রতিক চ্যাট সমূহ
             </h3>
-            <span className="text-[9px] bg-purple-100 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 font-extrabold px-2 py-0.5 rounded-full border border-purple-200/40 dark:border-purple-800/30">
-              PRO ⚡
-            </span>
+            <span className="text-[8px] text-slate-500 font-extrabold">{chats.length}টি সেশন</span>
           </div>
 
-          <div className="flex flex-col gap-2">
-            {(["ISLAMIC", "LEGEND"] as Mode[]).map(m => {
-              const isActive = mode === m;
-              const Icon = MODES[m].icon;
-              
-              let themeBtnClass = "";
-              if (m === "ISLAMIC") {
-                themeBtnClass = isActive 
-                  ? "bg-[#00cd9c] border-[#00a87f] text-white" 
-                  : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-700 dark:text-[#afc2cb] hover:bg-emerald-50 dark:hover:bg-emerald-950/20";
-              } else {
-                themeBtnClass = isActive 
-                  ? "bg-[#84d8ff] border-[#4ec1ff] text-slate-800 font-black" 
-                  : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-700 dark:text-[#afc2cb] hover:bg-sky-50 dark:hover:bg-sky-950/20";
-              }
+          <div className="flex flex-col gap-1.5 max-h-[170px] overflow-y-auto scrollbar-none pr-0.5">
+            {chats.map(chat => {
+              const lastMessage = chat.messages[chat.messages.length - 1]?.content || "নতুন কথোপকথন";
+              const isActive = activeChatId === chat.id;
 
               return (
-                <button 
-                  key={m} 
-                  onClick={() => { setMode(m); setIsSidebarOpen(false); playEffects("medium"); }} 
-                  className={cn(
-                    "px-4 py-2.5 rounded-[18px] font-extrabold text-xs flex items-center justify-between w-full text-left transition-all duration-100 border-2 border-b-[5px] active:border-b-2 active:translate-y-1 cursor-pointer select-none",
-                    themeBtnClass
+                <div 
+                  key={chat.id}
+                  className={cn("group flex items-center justify-between p-2.5 rounded-lg border transition-all cursor-pointer",
+                    isActive 
+                      ? "bg-[#14162a] border-[#222442] text-white" 
+                      : "bg-[#0c0d19]/45 border-[#121324] text-slate-400 hover:bg-[#0e1022] hover:text-slate-200"
                   )}
+                  onClick={() => { setActiveChatId(chat.id); setIsSidebarOpen(false); playEffects("light"); }}
                 >
-                  <div className="flex items-center gap-3">
-                    <Icon className="w-4 h-4 stroke-[3]" />
-                    <span className="font-extrabold text-[13px]">{MODES[m].label}</span>
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <MessageCircle className={cn("w-4 h-4 shrink-0", isActive ? "text-orange-500" : "text-slate-500")} />
+                    <div className="flex flex-col min-w-0 pr-2">
+                      <span className="text-xs font-semibold truncate">
+                        {chat.messages.length > 0 ? lastMessage : "নতুন চ্যাট শুরু"}
+                      </span>
+                      <span className="text-[8.5px] text-slate-500 font-bold mt-0.5">
+                        {chat.messages.length}টি বার্তা
+                      </span>
+                    </div>
                   </div>
-                  <span className="bg-gradient-to-r from-[#ffc800] to-[#ff9600] text-white text-[9px] font-black px-1.5 py-0.5 rounded-md border border-amber-400">
-                    VIP
-                  </span>
-                </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => { deleteChat(chat.id, e); }}
+                    className="p-1 rounded opacity-0 group-hover:opacity-100 hover:bg-slate-900 text-slate-500 hover:text-red-500 transition-all shrink-0 cursor-pointer"
+                    title="চ্যাট মুছুন"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 stroke-[2]" />
+                  </button>
+                </div>
               );
             })}
-          </div>
-        </div>
 
-        {/* Recent Chats Section */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-xs font-extrabold tracking-wider uppercase text-slate-400 dark:text-[#afc2cb] select-none">
-              সাম্প্রতিক চ্যাট ডায়রি
-            </h3>
-            <span className="text-[10px] text-slate-400 dark:text-[#afc2cb] font-extrabold">({chats.length})</span>
-          </div>
-
-          <div className="flex flex-col gap-2 max-h-[160px] overflow-y-auto scrollbar-none pr-1">
-            {chats.length === 0 ? (
-              <div className="px-4 py-3.5 rounded-[18px] border-2 border-dashed border-slate-200 dark:border-[#37464f] text-center text-xs text-slate-400 dark:text-[#afc2cb]/60 italic bg-slate-50/50 dark:bg-[#131f24]/30">
-                কোনো চ্যাট ডায়েরি নেই
+            {chats.length === 0 && (
+              <div className="p-4 border border-dashed border-[#1a1c32] rounded-lg text-center bg-[#090b14]/50">
+                <span className="text-[10px] text-slate-500 font-semibold font-sans">কোনো চ্যাট ডায়েরি নেই। চ্যাট শুরু করুন!</span>
               </div>
-            ) : (
-              chats.map(chat => {
-                const isActive = activeChatId === chat.id;
-                return (
-                  <div 
-                    key={chat.id} 
-                    className={cn(
-                      "group flex items-center justify-between w-full rounded-[16px] transition-all border-2 border-b-[4px] pl-1 pr-2 py-1 select-none active:border-b-2 active:translate-y-[2px]", 
-                      isActive
-                        ? "bg-[#ff9600]/10 border-[#ff9600] text-[#ff9600] dark:bg-[#ff9600]/5 dark:border-[#ff9600]"
-                        : "bg-white dark:bg-[#1a2d34] border-slate-200 dark:border-[#37464f] text-slate-600 dark:text-[#afc2cb] hover:bg-slate-50 dark:hover:bg-[#202f36]"
-                    )}
-                  >
-                    <button 
-                      onClick={() => { setActiveChatId(chat.id); setIsSidebarOpen(false); playEffects("light"); }} 
-                      className="px-2 py-1 flex-1 font-black text-xs text-left truncate cursor-pointer flex items-center gap-2"
-                      title={chat.title}
-                    >
-                      <span>💬</span>
-                      <span className="truncate max-w-[130px]">{chat.title}</span>
-                    </button>
-                    <button 
-                      onClick={(e) => { deleteChat(chat.id, e); }} 
-                      className="p-1 rounded-lg text-slate-400 dark:text-[#afc2cb]/65 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
-                      title="মুছে ফেলুন"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                );
-              })
             )}
           </div>
         </div>
       </div>
 
-      {/* Bottom Profile Block (Duolingo Tactile Box Layout) */}
-      <div className="p-4 border-t-2 border-pink-100/30 dark:border-[#1e2030] shrink-0 bg-pink-50/10 dark:bg-[#101220] mt-auto">
-        <div className="flex flex-col gap-3">
-          <button 
-            onClick={() => { 
-              setIsSettingsOpen(true); 
-              setActiveSettingsTab("profile"); 
-              setIsSidebarOpen(false); 
-              playEffects("medium"); 
-            }}
-            className="w-full rounded-[20px] p-2.5 flex items-center gap-3 border-2 border-b-[5px] bg-[#fffcfc] dark:bg-[#0e0f17] border-pink-100/40 dark:border-[#1e2030] text-slate-700 dark:text-white transition-all active:border-b-2 active:translate-y-[2px] cursor-pointer group text-left"
-            title="প্রোফাইল সংশোধন করুন ⚙️"
-          >
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#1cb0f6] p-0.5 shadow-sm shrink-0 relative">
-              <img src={userProfilePic || "https://api.dicebear.com/7.x/adventurer/svg?seed=Sophia"} className="w-full h-full object-cover rounded-full bg-slate-50" alt="Profile" />
-              <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-[#58cc02] border-2 border-white dark:border-[#131f24] rounded-full animate-ping" />
-            </div>
-            
-            <div className="flex flex-col flex-1 min-w-0">
-              <div className="flex items-center gap-1.5 leading-none">
-                <span className="font-extrabold text-sm text-slate-800 dark:text-[#afc2cb] truncate">
-                  {userName}
-                </span>
-                <span className="text-[8px] font-black px-1.5 py-0.5 rounded-full bg-[#ffc800] text-slate-800 border border-[#e6b400]/40 shrink-0">
-                  Lvl {currentLevel}
-                </span>
+      {/* User settings Quick access section footer */}
+      <div className="p-3 border-t border-[#1a1c32] shrink-0 bg-[#0a0b13] flex items-center justify-between">
+        <div className="flex items-center gap-2 min-w-0">
+          <div className="relative shrink-0">
+            {userProfilePic ? (
+              <img src={userProfilePic} className="w-7.5 h-7.5 rounded-full object-cover border border-[#1e2039]" alt="User profile" />
+            ) : (
+              <div className="w-7.5 h-7.5 rounded-full bg-indigo-500 flex items-center justify-center text-white font-extrabold text-[10px] uppercase">
+                {userName ? userName.substring(0, 1) : "U"}
               </div>
-              <span className="text-[10px] text-slate-400 dark:text-[#afc2cb]/60 font-bold mt-1">
-                {leagueName}
-              </span>
-            </div>
-          </button>
-
-          {/* Quick Dual Control (Settings Icon & Theme Swap Button) */}
-          <div className="grid grid-cols-2 gap-2">
-            <button 
-              onClick={() => { setIsSettingsOpen(true); setIsSidebarOpen(false); playEffects("medium"); }} 
-              className="py-2.5 rounded-2xl border-2 border-b-[4px] bg-[#fffcfc] border-pink-100/40 dark:bg-[#0e0f17] dark:border-[#1e2030] hover:bg-pink-50/10 dark:hover:bg-[#1a1b2d] text-[#ff9600] flex items-center justify-center gap-1.5 font-extrabold text-[11px] cursor-pointer"
-            >
-              <Settings className="w-3.5 h-3.5 stroke-[3]" />
-              সেটিংস
-            </button>
-            <button 
-              onClick={() => { setTheme(theme === "light" ? "dark" : "light"); playEffects("medium"); }} 
-              className="py-2.5 rounded-2xl border-2 border-b-[4px] bg-[#fffcfc] border-pink-100/40 dark:bg-[#0e0f17] dark:border-[#1e2030] hover:bg-pink-50/10 dark:hover:bg-[#1a1b2d] text-[#1cb0f6] flex items-center justify-center gap-1.5 font-extrabold text-[11px] cursor-pointer"
-            >
-              {theme === "light" ? <Moon className="w-3.5 h-3.5 text-indigo-500 fill-indigo-100" /> : <Sun className="w-3.5 h-3.5 text-amber-500 fill-amber-100" />}
-              {theme === "light" ? "ডার্ক মোড" : "লাইট মোড"}
-            </button>
+            )}
+            <span className="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-green-500 border border-[#0a0b13]" />
+          </div>
+          <div className="flex flex-col min-w-0">
+            <span className="text-[11.5px] font-black text-white truncate">{userName || "সোনা বন্ধু"}</span>
+            <span className="text-[8px] text-slate-550 font-bold leading-none mt-0.5 truncate">{leagueName}</span>
           </div>
         </div>
+
+        <button 
+          onClick={() => { setIsSettingsOpen(true); setActiveSettingsTab("profile"); playEffects("medium"); }}
+          className="p-1.5 rounded-lg border border-slate-800 bg-[#121324] hover:bg-slate-900 text-slate-400 hover:text-orange-500 transition-all cursor-pointer"
+          title="প্রোফাইল সেটিংস"
+        >
+          <Settings className="w-3.5 h-3.5 stroke-[2.5]" />
+        </button>
       </div>
     </div>
   );

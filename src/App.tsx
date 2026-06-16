@@ -181,15 +181,8 @@ const DoubleCheck = ({ isRead, accentColor }: { isRead: boolean; accentColor: st
 
 export default function App() {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(() => {
-    try {
-      const saved = localStorage.getItem("appTheme");
-      if (saved === "light" || saved === "dark") {
-        return saved;
-      }
-    } catch (e) {}
-    return "light";
-  });
+  const theme: "light" | "dark" = "dark";
+  const setTheme = () => {}; // Dummy to keep types intact without rewrite complexity
   
   const [mode, setMode] = useState<Mode>(() => {
     try {
@@ -1174,7 +1167,6 @@ export default function App() {
                  return m;
              });
              currentChats[updatedChatIndex] = chat;
-             // syncChatData(chat);
          }
          return currentChats;
       });
@@ -1224,21 +1216,25 @@ export default function App() {
   };
 
   return (
-     <div className="flex flex-col min-h-screen w-full bg-white dark:bg-[#0b0c16] text-slate-800 dark:text-white font-sans transition-colors duration-300">
+     <div className="flex flex-col h-screen max-h-screen w-full bg-[#05060b] text-slate-200 font-sans overflow-hidden">
         {!completedOnboarding ? (
-         /* 2. DUOLINGO PROGRESS-GUIDED COMPACT ONBOARDING STEP */
+         /* 2. PREMIUM MODERN SPACEY DARK ONBOARDING STEP */
          <div className="flex-1 flex flex-col justify-center items-center p-4 select-none relative overflow-hidden animate-fade-in animate-duration-300">
-            <div className="bg-white dark:bg-[#1a2d34] p-8 sm:p-10 rounded-[32px] border-2 border-b-8 border-slate-200 dark:border-[#37464f] shadow-xl max-w-md w-full relative z-10 flex flex-col items-center">
+            {/* Ambient glowing highlights */}
+            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full bg-orange-500/10 blur-[120px] pointer-events-none" />
+            <div className="absolute bottom-1/4 left-1/3 w-64 h-64 rounded-full bg-rose-500/10 blur-[100px] pointer-events-none" />
+
+            <div className="bg-[#0c0e1b]/95 border border-[#1e213d] p-6 sm:p-8 rounded-2xl shadow-2xl max-w-md w-full relative z-10 flex flex-col items-center backdrop-blur-md">
                
                {/* Progress indicator head */}
                <div className="w-full space-y-2 mb-6">
-                  <div className="flex justify-between items-center text-[10px] font-black uppercase text-[#ff9600] tracking-wider px-1">
+                  <div className="flex justify-between items-center text-[10px] font-black uppercase text-orange-400 tracking-wider px-1">
                      <span>ডায়েরি প্রোফাইল রেডি</span>
-                     <span>{onboardingStep === "avatar" ? "ধাপ ১/২" : "ধাপ ২/২"}</span>
+                     <span>{onboardingStep === "avatar" ? "ধাপ ১ / ২" : "ধাপ ২ / ২"}</span>
                   </div>
-                  <div className="w-full bg-slate-100 dark:bg-[#131f24] h-3.5 rounded-full border-2 border-slate-200 dark:border-[#37464f] overflow-hidden">
+                  <div className="w-full bg-[#070810] h-2 rounded-full border border-slate-800/80 overflow-hidden">
                      <div 
-                        className="h-full bg-[#58cc02] rounded-full transition-all duration-300"
+                        className="h-full bg-gradient-to-r from-orange-500 to-rose-500 rounded-full transition-all duration-300"
                         style={{ width: onboardingStep === "avatar" ? "50%" : "100%" }}
                      />
                   </div>
@@ -1246,53 +1242,40 @@ export default function App() {
 
             {onboardingStep === "avatar" ? (
                <div className="flex flex-col w-full items-center">
-                  <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-[#131f24] border-2 border-b-4 border-slate-200 dark:border-[#37464f] flex items-center justify-center text-[24px] shadow-sm mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-[22px] shadow-sm mb-4">
                      🎨
                   </div>
-                  <h3 className="text-base font-black text-slate-900 dark:text-white text-center leading-tight">
+                  <h3 className="text-base font-black text-white text-center leading-tight">
                      আপনার সুন্দর প্রোফাইল ছবি পছন্দ করুন
                   </h3>
-                  <p className="text-[11px] text-slate-400 dark:text-[#afc2cb]/80 font-bold text-center mt-1.5 leading-relaxed">
+                  <p className="text-[11px] text-slate-400 font-semibold text-center mt-1.5 leading-relaxed">
                      নিচের সুন্দর সোনা অবতারগুলোর যেকোনো একটি সিলেক্ট করুন যা আপনার অবয়ব হিসেবে ডায়েরিতে থাকবে:
                   </p>
 
                   <div className="grid grid-cols-2 gap-3 mt-5 w-full max-h-[190px] overflow-y-auto pr-1">
-                     {false && (
-                        <button
-                           onClick={() => { setSelectedOnboardingPic(localUser.photoURL || ""); playEffects("light"); }}
-                           className={cn("relative hover:bg-slate-50 dark:hover:bg-[#202f36] rounded-2xl border-2 transition-all p-2.5 active:translate-y-[2px] cursor-pointer flex flex-col justify-center items-center gap-1 bg-white dark:bg-[#131f24] h-20",
-                              selectedOnboardingPic === localUser.photoURL 
-                                ? "border-[#1cb0f6] border-b-[5px] bg-[#1cb0f6]/5" 
-                                : "border-slate-200 dark:border-[#37464f] border-b-[4px]"
-                           )}
-                        >
-                           <img src={localUser.photoURL} className="w-9 h-9 object-cover rounded-full" referrerPolicy="no-referrer" />
-                           <span className="text-[10px] font-black text-slate-700 dark:text-slate-300">গুগল ছবি</span>
-                        </button>
-                     )}
                      {ONBOARDING_AVATARS.map((avat, idx) => (
                         <button
                            key={idx}
                            onClick={() => { setSelectedOnboardingPic(avat); playEffects("light"); }}
-                           className={cn("relative hover:bg-slate-50 dark:hover:bg-[#202f36] rounded-2xl border-2 transition-all p-2.5 active:translate-y-[2px] cursor-pointer flex flex-col justify-center items-center gap-1 bg-white dark:bg-[#131f24] h-20",
+                           className={cn("relative hover:bg-[#15172d] rounded-xl border transition-all p-2.5 active:scale-95 cursor-pointer flex flex-col justify-center items-center gap-1 bg-[#090b14]/90 h-20",
                               selectedOnboardingPic === avat 
-                                ? "border-[#1cb0f6] border-b-[5px] bg-[#1cb0f6]/5" 
-                                : "border-slate-200 dark:border-[#37464f] border-b-[4px]"
+                                ? "border-orange-500 bg-orange-500/5 shadow-md shadow-orange-500/10" 
+                                : "border-[#1e213d]"
                            )}
                         >
-                           <img src={avat} className="w-9 h-9 object-cover rounded-full bg-slate-50 dark:bg-slate-900" />
-                           <span className="text-[10px] font-black text-slate-700 dark:text-slate-300">অবতার {idx+1}</span>
+                           <img src={avat} className="w-9 h-9 object-cover rounded-full bg-[#070810]" />
+                           <span className="text-[10px] font-bold text-slate-300">অবতার {idx+1}</span>
                         </button>
                      ))}
                   </div>
 
                   <div className="mt-4 h-6 w-full flex items-center justify-center">
                      {!selectedOnboardingPic ? (
-                        <span className="text-[10px] font-black text-red-500 animate-pulse">
+                        <span className="text-[10px] font-bold text-rose-455 animate-pulse">
                            ⚠️ অনুগ্রহ করে একটি প্রিয় অবতার চয়েস করুন!
                         </span>
                      ) : (
-                        <span className="text-[10px] font-black text-green-500 animate-bounce">
+                        <span className="text-[10px] font-bold text-[#f97316] animate-bounce">
                            🌟 অসাধারণ পছন্দ! পরবর্তী ধাপে চলো
                         </span>
                      )}
@@ -1304,47 +1287,43 @@ export default function App() {
                         setOnboardingStep("chatbotName");
                         playEffects("medium");
                      }}
-                     className="w-full py-3.5 bg-[#58cc02] border-2 border-b-[5px] border-[#46a302] hover:bg-[#61df02] font-black text-xs text-white rounded-[18px] transition-all active:border-b-2 active:translate-y-[2px] cursor-pointer disabled:opacity-50 mt-4 uppercase tracking-wider"
+                     className="w-full py-3 bg-gradient-to-r from-orange-500 to-[#f97316] text-white hover:brightness-105 font-black text-xs rounded-xl transition-all active:scale-95 cursor-pointer disabled:opacity-50 mt-4 uppercase tracking-wider"
                   >
                      পরবর্তী ধাপে যান ➡️
                   </button>
                </div>
             ) : (
                <div className="flex flex-col w-full items-center animate-fade-in animate-duration-350">
-                  <div className="w-14 h-14 rounded-2xl bg-pink-50 dark:bg-pink-950/20 flex items-center justify-center text-[22px] shadow-sm mb-4 mt-2">
+                  <div className="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center text-[20px] shadow-sm mb-4 mt-2">
                      🤖
                   </div>
-                  <h3 className="text-base font-black text-slate-800 dark:text-white capitalize text-center">
+                  <h3 className="text-base font-black text-white capitalize text-center">
                      আপনার ও আপনার চ্যাটবটের নাম দিন
                   </h3>
-                  <p className="text-[10px] text-gray-550 dark:text-gray-400 font-bold text-center mt-1.5 leading-relaxed px-1">
-                     অ্যাপে আপনাকে যে ডাকনামে সম্বোধন করা হবে এবং চ্যাটবটের সারা এআই-এর বদলে আপনি যে ইউনিক কিউট নাম ডাকতে চান তা দিন।
+                  <p className="text-[10px] text-slate-400 font-semibold text-center mt-1.5 leading-relaxed px-1">
+                     অ্যাপে আপনাকে যে ডাকনামে সম্বোধন করা হবে এবং চ্যাটবটের ইউনিক কিউট নাম যা ডাকতে চান তা দিন।
                   </p>
 
                   <div className="flex flex-col gap-3.5 w-full mt-5">
                      <div className="flex flex-col gap-1">
-                        <label className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest pl-1">আপনার নাম (Your Name)</label>
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">আপনার নাম (Your Name)</label>
                         <input 
                            type="text" 
                            value={typedUserName} 
                            onChange={(e) => setTypedUserName(e.target.value)} 
-                           className={cn("w-full rounded-2xl p-2.5 font-bold text-xs border outline-none focus:ring-1 focus:ring-orange-500 transition-all text-center leading-normal", 
-                              theme === "dark" ? "bg-slate-950 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-800"
-                           )}
+                           className="w-full bg-[#070810] border border-[#1e203c] text-white rounded-xl p-2.5 font-bold text-xs outline-none focus:border-orange-500 transition-all text-center leading-normal"
                            placeholder="যেমন: শ্রাবণী সারা খান, সিয়াম..."
                            maxLength={30}
                         />
                      </div>
 
                      <div className="flex flex-col gap-1">
-                        <label className="text-[9px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest pl-1">চ্যাটবটের কাস্টম নাম (AI Name)</label>
+                        <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest pl-1">চ্যাটবটের কাস্টম নাম (AI Name)</label>
                         <input 
                            type="text" 
                            value={typedBotName} 
                            onChange={(e) => setTypedBotName(e.target.value)} 
-                           className={cn("w-full rounded-2xl p-2.5 font-bold text-xs border outline-none focus:ring-1 focus:ring-orange-500 transition-all text-center leading-normal", 
-                              theme === "dark" ? "bg-slate-950 border-slate-900 text-white" : "bg-white border-slate-200 text-slate-800"
-                           )}
+                           className="w-full bg-[#070810] border border-[#1e203c] text-white rounded-xl p-2.5 font-bold text-xs outline-none focus:border-orange-500 transition-all text-center leading-normal"
                            placeholder="যেমন: সারা এআই, তিশা..."
                            maxLength={30}
                         />
@@ -1357,7 +1336,7 @@ export default function App() {
                            setOnboardingStep("avatar");
                            playEffects("light");
                         }}
-                        className="py-3 px-4 bg-slate-100 text-slate-600 rounded-2xl hover:bg-slate-200 transition-all text-xs font-black active:scale-95 cursor-pointer dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+                        className="py-3 px-4 bg-[#121324] text-slate-300 rounded-xl hover:bg-slate-900 border border-slate-800 transition-all text-xs font-bold active:scale-95 cursor-pointer"
                      >
                         ⬅️ ব্যাক
                      </button>
@@ -1367,7 +1346,7 @@ export default function App() {
                            playEffects("light");
                            handleCompleteOnboarding();
                         }}
-                        className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-[#f97316] text-white hover:brightness-105 font-black text-xs rounded-2xl shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50 text-center"
+                        className="flex-1 py-3 bg-gradient-to-r from-orange-500 to-[#f97316] text-white hover:brightness-105 font-black text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer disabled:opacity-50 text-center"
                      >
                         🔑 সম্পূর্ণ করুন 🎉
                      </button>
@@ -1493,59 +1472,58 @@ export default function App() {
                ) : (
                   <>
                      {/* Messenger Top Header Panel */}
-                     <header className={cn("h-[64px] min-h-[64px] shrink-0 border-b flex items-center justify-between px-4 transition-colors duration-300 z-10 shadow-xs backdrop-blur-md", 
-                        theme === "dark" ? "border-slate-800/80 bg-[#0f111a]/95" : "border-pink-100/60 bg-pink-50/60"
-                     )}>
+                     <header className="h-[64px] min-h-[64px] shrink-0 border-b border-[#1e2030] flex items-center justify-between px-5 bg-[#0d0e1b]/95 backdrop-blur-md z-10 shadow-lg">
                         {/* Mobile Drawer Menu trigger */}
                         <div className="flex items-center gap-3">
                            <button 
                               type="button"
                               onClick={() => { setIsSidebarOpen(true); playEffects("light"); }}
-                              className={cn("p-1.5 rounded-xl border transition-all active:scale-90 cursor-pointer lg:hidden",
-                              theme === "dark" ? "text-slate-300 border-slate-800 hover:bg-slate-900" : "text-slate-600 border-slate-200 hover:bg-slate-50"
-                              )}
+                              className="p-2 rounded-xl border border-slate-800 text-slate-300 hover:bg-slate-900 transition-all active:scale-90 cursor-pointer lg:hidden"
                            >
-                              <Menu className="w-5 h-5" />
+                              <Menu className="w-4.5 h-4.5" />
                            </button>
 
                            {/* Mode label/badge indicator */}
-                           <div className="flex items-center gap-2 select-none pr-1.5">
-                              <span className="w-2.5 h-2.5 rounded-full animate-pulse-slow" style={{ backgroundColor: MODE_THEMES[mode].accent }} />
-                              <div className="flex flex-col">
-                                 <span className="font-extrabold text-xs text-slate-800 dark:text-white leading-none flex items-center gap-1.5 truncate max-w-[124px] sm:max-w-[200px]" style={{ display: 'inline-flex' }}>
-                                    {botName} • {MODES[mode].label}
+                           <div className="flex items-center gap-2.5 select-none pr-1.5 font-sans">
+                              <div className="relative flex items-center justify-center">
+                                 <span className="w-2.5 h-2.5 rounded-full animate-pulse-slow shrink-0" style={{ backgroundColor: MODE_THEMES[mode].accent }} />
+                                 <span className="absolute w-2.5 h-2.5 rounded-full animate-ping opacity-75 shrink-0" style={{ backgroundColor: MODE_THEMES[mode].accent }} />
+                              </div>
+                              <div className="flex flex-col flex-wrap justify-center">
+                                 <span className="font-extrabold text-xs text-white leading-none flex items-center gap-1.5 truncate max-w-[124px] sm:max-w-[200px]" style={{ display: 'inline-flex' }}>
+                                    {botName} <span className="text-[9px] font-black tracking-wide uppercase px-2 py-0.5 rounded bg-[#ff9600]/10 text-[#ff9600] border border-[#ff9600]/20 leading-none">{MODES[mode].label}</span>
                                  </span>
-                                 <span className="text-[9px] text-slate-400 dark:text-slate-500 font-bold leading-normal mt-0.5 truncate max-w-[124px] sm:max-w-[200px]" style={{ display: 'inline-block' }}>{userName || "USER"} • সক্রিয়</span>
+                                 <span className="text-[9px] text-slate-400 font-bold leading-normal mt-1 truncate max-w-[124px] sm:max-w-[200px]" style={{ display: 'inline-block' }}>{userName || "USER"} • সক্রিয়🟢</span>
                               </div>
                            </div>
                         </div>
 
                         {/* Speech state controllers */}
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2 font-sans">
                            <button
                               type="button"
                               onClick={() => { setSoundEnabled(!soundEnabled); playEffects("light"); }}
-                              className={cn("w-8.5 h-8.5 rounded-xl flex items-center justify-center border transition-all duration-250 active:scale-90 cursor-pointer",
+                              className={cn("w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-250 active:scale-90 cursor-pointer bg-slate-950/30",
                                  soundEnabled 
-                                    ? "text-orange-500 bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-900/50" 
-                                    : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-500 dark:hover:text-slate-350 dark:hover:bg-slate-800/45"
+                                    ? "text-[#f97316] bg-[#f97316]/10 border-[#f97316]/30" 
+                                    : "text-slate-400 border-slate-800/80 hover:text-white hover:bg-slate-900"
                               )}
-                              title={soundEnabled ? "সাউন্ড বন্ধ করুন" : "সাউন্ড चालू করুন"}
+                              title={soundEnabled ? "সাউন্ড বন্ধ করুন" : "সাউন্ড চালু করুন"}
                            >
                               {soundEnabled ? (
-                                 <Volume2 className="w-4 h-4 animate-pulse text-orange-550 leading-none" />
+                                 <Volume2 className="w-4 h-4 animate-pulse text-[#f97316] stroke-[2.5]" />
                               ) : (
-                                 <VolumeX className="w-4 h-4 text-slate-600 leading-none" />
+                                 <VolumeX className="w-4 h-4 text-slate-400 stroke-[2.5]" />
                               )}
                            </button>
 
                            <button
                               type="button"
                               onClick={() => { setIsSettingsOpen(currentView !== "settings"); playEffects("medium"); }}
-                              className={cn("w-8.5 h-8.5 rounded-xl flex items-center justify-center border transition-all duration-250 active:scale-95 cursor-pointer",
+                              className={cn("w-9 h-9 rounded-xl flex items-center justify-center border transition-all duration-250 active:scale-95 cursor-pointer bg-slate-950/30",
                                  currentView === "settings"
-                                    ? "text-orange-500 bg-orange-50 border-orange-200 dark:bg-orange-950/30 dark:border-orange-900/50 hover:bg-orange-100"
-                                    : "text-slate-400 border-slate-200 dark:border-slate-800/80 hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-355 dark:hover:bg-slate-800/45"
+                                    ? "text-[#f97316] bg-[#f97316]/10 border-[#f97316]/30 hover:bg-[#f97316]/20"
+                                    : "text-slate-400 border-slate-800/80 hover:text-white hover:bg-slate-900"
                               )}
                               title={currentView === "settings" ? "চ্যাটে ফিরে যান" : "সেটিংস খুলুন"}
                            >
@@ -1562,9 +1540,7 @@ export default function App() {
                      <main 
                         ref={scrollRef as any} 
                         onScroll={handleScroll}
-                        className={cn("flex-1 overflow-y-auto px-4 py-3 pb-8 flex flex-col gap-4 scroll-smooth select-text", 
-                           theme === "dark" ? "bg-gradient-to-b from-[#0f1020] to-[#070810]" : "bg-gradient-to-b from-[#fff5f6] via-[#fffbfd] to-[#fffbfc]"
-                        )}
+                        className="flex-1 overflow-y-auto px-4 py-3 pb-8 flex flex-col gap-4 scroll-smooth select-text bg-[#090b14]"
                      >
                         {(!activeChat || activeChat.messages.length === 0) ? (
                            /* Screen Welcomer center template when zero messages */
@@ -1756,11 +1732,9 @@ export default function App() {
                      </main>
 
                      {/* Main bottom Floating form Console console */}
-                     <div className={cn("shrink-0 p-3 sm:p-4 w-full border-t transition-all duration-300 relative z-20", 
-                        isDragging 
-                           ? "bg-amber-500/10 dark:bg-amber-500/5 border-amber-500 shadow-lg animate-pulse" 
-                           : (theme === "dark" ? "border-slate-800 bg-[#161e31]/95 backdrop-blur-md" : "border-slate-200 bg-white/95 backdrop-blur-md")
-                        )}
+                     <div className={cn("shrink-0 p-3 sm:p-4 pb-5 sm:pb-6 w-full border-t border-[#1e2030] transition-all duration-300 relative z-20 bg-[#0d0e1b]/95 backdrop-blur-md shadow-[0_-10px_35px_-5px_rgba(0,0,0,0.5)]", 
+                        isDragging && "bg-amber-500/10 border-amber-500 shadow-lg animate-pulse"
+                     )}
                         onDragOver={handleDragOver}
                         onDragLeave={handleDragLeave}
                         onDrop={handleDrop}
@@ -1779,17 +1753,13 @@ export default function App() {
 
                            {/* Interactive pre-input suggested quick chips */}
                            {!isGenerating && activeChat && (
-                              <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-1.5 scrollbar-none snap-x select-none">
+                              <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 mb-1 scrollbar-none snap-x select-none font-sans">
                                  {MODE_SUGGESTIONS[mode]?.map((chip, idx) => (
                                     <button
                                        key={idx}
                                        type="button"
                                        onClick={() => { setInputValue(chip.text); if (textareaRef.current) textareaRef.current.focus(); playEffects("light"); }}
-                                       className={cn("px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold border transition-all shrink-0 snap-align-start hover:scale-[1.01] active:scale-[0.99] cursor-pointer shadow-2xs whitespace-nowrap",
-                                          theme === "dark" 
-                                             ? "bg-slate-900 border-slate-800 text-slate-300 hover:text-white" 
-                                             : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
-                                       )}
+                                       className="px-3 py-1.5 rounded-full text-[10px] sm:text-xs font-bold border border-[#1e2030] bg-[#131428] text-[#a0a5c4] hover:text-white hover:border-[#f97316]/50 hover:bg-[#1a1c36] transition-all shrink-0 snap-align-start active:scale-95 cursor-pointer shadow-md whitespace-nowrap"
                                     >
                                        {chip.text}
                                     </button>
@@ -1848,20 +1818,16 @@ export default function App() {
                                  className="hidden" 
                               />
 
-                              <div className={cn("flex-1 flex items-end px-3 py-1.5 rounded-2xl border transition-all duration-300 focus-within:ring-2 focus-within:ring-[#f97316]/12 shadow-sm",
-                                 theme === "dark" 
-                                    ? "bg-slate-900 border-slate-800 focus-within:border-[#f97316]/65 text-[#f3f4f6]" 
-                                    : "bg-slate-50 border-slate-200 focus-within:border-[#f97316]/60 text-slate-800"
-                              )}>
+                              <div className="flex-1 flex items-end px-3 py-1.5 rounded-2xl border transition-all duration-300 focus-within:ring-2 focus-within:ring-[#f97316]/12 bg-[#0f1020] border-[#1e2030] focus-within:border-[#f97316]/50 text-[#f3f4f6] shadow-sm">
                                  {/* File attachments icon */}
-                                 <div className="flex items-center gap-1 pr-1.5 pb-0.5 shrink-0 select-none">
+                                 <div className="flex items-center gap-1.5 pr-1.5 pb-0.5 shrink-0 select-none font-sans">
                                     <button 
                                        type="button"
                                        onClick={() => fileInputRef.current?.click()}
-                                       className={cn("w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 active:scale-90 border",
+                                       className={cn("w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-90 border",
                                           attachedFiles.length > 0
-                                             ? "text-orange-500 bg-orange-50 border-orange-200 dark:bg-orange-955/35 dark:border-orange-900/50"
-                                             : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-500 dark:hover:text-slate-350 dark:hover:bg-slate-800/45"
+                                             ? "text-[#f97316] bg-[#f97316]/10 border-[#f97316]/30"
+                                             : "text-slate-400 border-transparent hover:text-white hover:bg-slate-900/80"
                                        )}
                                        title="ছবি আপলোড করুন"
                                     >
@@ -1872,10 +1838,10 @@ export default function App() {
                                     <button 
                                        type="button"
                                        onClick={toggleSpeechRecognition}
-                                       className={cn("w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-205 active:scale-95 border relative",
+                                       className={cn("w-8.5 h-8.5 rounded-xl flex items-center justify-center transition-all duration-205 active:scale-95 border relative",
                                           isListening
-                                             ? "bg-red-500/10 border-red-300 text-red-500 dark:bg-red-950/30 dark:border-red-900/40 animate-pulse"
-                                             : "text-slate-400 border-transparent hover:text-slate-600 hover:bg-slate-200/40 dark:text-slate-500 dark:hover:text-slate-400 dark:hover:bg-slate-800/45"
+                                             ? "bg-red-500/10 border-red-500/30 text-red-500 animate-pulse"
+                                             : "text-slate-400 border-transparent hover:text-white hover:bg-slate-900/80"
                                        )}
                                        title={isListening ? "রেকর্ডিং বন্ধ করুন" : "ভয়েস টাইপিং"}
                                     >
@@ -1914,12 +1880,12 @@ export default function App() {
                                  </div>
 
                                  {/* Text limit indicator */}
-                                 <div className="flex items-center gap-1.5 pb-0.5 shrink-0 select-none">
+                                 <div className="flex items-center gap-1.5 pb-0.5 shrink-0 select-none font-sans">
                                     {inputValue.length > 0 && (
-                                       <span className={cn("text-[8.5px] font-black px-1.5 py-0.5 rounded-md tracking-wider transition-all",
+                                       <span className={cn("text-[9px] font-black px-1.5 py-0.5 rounded-md tracking-wider transition-all",
                                           inputValue.length >= 1300 
-                                             ? "bg-red-500/10 text-red-500 font-extrabold" 
-                                             : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500"
+                                             ? "bg-red-500/15 text-red-400 font-extrabold" 
+                                             : "bg-slate-800/50 text-slate-400"
                                        )}>
                                           {inputValue.length}/1500
                                        </span>
@@ -1929,7 +1895,7 @@ export default function App() {
                                        <button
                                           type="button"
                                           onClick={() => { setInputValue(""); if (textareaRef.current) { textareaRef.current.style.height = "auto"; textareaRef.current.focus(); } }}
-                                          className="p-1 rounded-md text-slate-400 hover:text-slate-550 dark:text-slate-500 dark:hover:text-slate-350 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors"
+                                          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/80 transition-colors cursor-pointer"
                                           title="লেখা মুছুন"
                                        >
                                           <X className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1943,10 +1909,10 @@ export default function App() {
                                  type="button"
                                  onClick={() => handleSendMessage()}
                                  disabled={isGenerating || (!inputValue.trim() && attachedFiles.length === 0)}
-                                 className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 shadow-md shrink-0 text-white",
+                                 className={cn("w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95 shadow-md shrink-0 text-white font-sans",
                                     (inputValue.trim() || attachedFiles.length > 0)
-                                       ? "bg-gradient-to-r from-orange-500 via-[#f97316] to-rose-500 hover:brightness-105 shadow-orange-500/10"
-                                       : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed shadow-none"
+                                       ? "bg-gradient-to-r from-orange-500 via-[#f97316] to-rose-500 hover:brightness-105 shadow-md shadow-orange-500/20"
+                                       : "bg-slate-900 border border-slate-850 text-slate-500 cursor-not-allowed shadow-none"
                                  )}
                                  title="বার্তা পাঠান"
                               >
