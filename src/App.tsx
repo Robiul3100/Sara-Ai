@@ -1630,7 +1630,7 @@ export default function App() {
                                                 </div>
                                              )}
                                              {m.role === "assistant" ? (
-                                                <div className="markdown-content prose dark:prose-invert max-w-none text-slate-800 dark:text-slate-100 font-medium select-text" dangerouslySetInnerHTML={parseThinkingAndSteps(m.content)} />
+                                                <div className="markdown-body markdown-content prose max-w-none text-slate-100 font-medium select-text" dangerouslySetInnerHTML={parseThinkingAndSteps(m.content)} />
                                              ) : (
                                                 (m.content || m.attachments) && <p className="whitespace-pre-wrap font-semibold tracking-tight leading-relaxed select-text text-inherit">{m.content}</p>
                                              )}
